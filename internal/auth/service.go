@@ -20,10 +20,10 @@ func NewService(repo Repository, jwt *jwt.Manager) *Service {
 	}
 }
 
-func (s *Service) Signup(ctx context.Context, name, email, password string) (*dto.LoginResponse, error) {
+func (s *Service) Signup(ctx context.Context, name, email, password string) (error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	user := &User {
 		Name:         name,
@@ -32,13 +32,9 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (*dt
 	}
 	err = s.repo.Create(ctx, user)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	token, err := s.jwt.Generate(user.ID)
-	if err != nil {
-		return  nil, err
-	}
-	return &dto.LoginResponse{AccessToken: token}, nil
+	return nil
 } 
 
 func (s *Service) Login(ctx context.Context, email, password string) (*dto.LoginResponse, error) {

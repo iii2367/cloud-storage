@@ -9,13 +9,11 @@ import (
 
 type Handler struct {
 	service	*auth.Service
-	repo	auth.Repository
 }
 
-func NewHandler(service *auth.Service, repo auth.Repository) *Handler {
+func NewHandler(service *auth.Service) *Handler {
 	return &Handler {
-		service: service,
-		repo:    repo,
+		service: service,	
 	}
 }
 
@@ -26,7 +24,7 @@ func (h *Handler) Signup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	loginResponse, err := h.service.Signup(
+	err = h.service.Signup(
 		c.Request.Context(),
 		req.Name,
 		req.Email,
@@ -36,9 +34,7 @@ func (h *Handler) Signup(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"token":    loginResponse,
-	})
+	c.Status(http.StatusCreated)
 }
 
 func (h *Handler) Login(c *gin.Context) {

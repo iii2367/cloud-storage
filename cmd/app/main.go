@@ -24,7 +24,7 @@ func main() {
 	repo := postgres.New(db)
 	jwtManager := jwt.New(cfg.JWT)
 	service := auth.NewService(repo, jwtManager)
-	handler := authHttp.NewHandler(service, repo)
+	handler := authHttp.NewHandler(service)
 	router := gin.Default()
 
 	authHttp.RegisterRoutes(router, handler)
