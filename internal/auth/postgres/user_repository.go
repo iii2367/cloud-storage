@@ -10,19 +10,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Repository struct {
+type UserRepository struct {
     db *pgxpool.Pool
 }
 
-var _ auth.Repository = (*Repository)(nil)
+var _ auth.UserRepository = (*UserRepository)(nil)
 
-func New(db *pgxpool.Pool) *Repository {
-    return &Repository {
+func NewUserRepository(db *pgxpool.Pool) *UserRepository {
+    return &UserRepository {
         db: db,
     }
 }
 
-func (r *Repository) Create(ctx context.Context, user *auth.User) error {
+func (r *UserRepository) Create(ctx context.Context, user *auth.User) error {
 	query := `
         INSERT INTO users (name, email, password_hash)
         VALUES ($1, $2, $3)
@@ -49,7 +49,7 @@ func (r *Repository) Create(ctx context.Context, user *auth.User) error {
 	return nil
 }
 
-func (r *Repository) FindByID(ctx context.Context, id uint) (*auth.User, error) {
+func (r *UserRepository) FindByID(ctx context.Context, id uint) (*auth.User, error) {
 	var user auth.User
 
     err := r.db.QueryRow(
@@ -77,7 +77,7 @@ func (r *Repository) FindByID(ctx context.Context, id uint) (*auth.User, error) 
 	return &user, nil 
 }
 
-func (r *Repository) FindByEmail(ctx context.Context, email string) (*auth.User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*auth.User, error) {
 	var user auth.User
 
     err := r.db.QueryRow(

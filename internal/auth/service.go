@@ -4,18 +4,17 @@ import (
 	"cloud-storage/internal/auth/dto"
 	"cloud-storage/internal/jwt"
 	"context"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
-	repo	Repository
+	userRepo	UserRepository
 	jwt  	*jwt.Manager
 }
 
-func NewService(repo Repository, jwt *jwt.Manager) *Service {
+func NewService(userRepo UserRepository, jwt *jwt.Manager) *Service {
 	return &Service {
-		repo: 	repo,
+		userRepo: 	userRepo,
 		jwt: 	jwt,
 	}
 }
@@ -30,7 +29,7 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (err
 		Email:        email,
 		PasswordHash: string(hash),
 	}
-	err = s.repo.Create(ctx, user)
+	err = s.userRepo.Create(ctx, user)
 	if err != nil {
 		return err
 	}
@@ -39,7 +38,7 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (err
 
 func (s *Service) Login(ctx context.Context, email, password string) (*dto.LoginResponse, error) {
 
-	user, err := s.repo.FindByEmail(ctx, email)
+	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
@@ -50,9 +49,13 @@ func (s *Service) Login(ctx context.Context, email, password string) (*dto.Login
 	if err != nil {
 		return nil, ErrInvalidCredentials
 	}
-	token, err := s.jwt.GenerateAccessToken(user.ID)
+	accessToken, err := s.jwt.GenerateAccessToken(user.ID)
 	if err != nil {
 		return  nil, err
 	}
-	return &dto.LoginResponse{AccessToken: token}, nil
+	/*refreshToken, refreshClaims, err := s.jwt.GenerateRefreshToken(user.ID)
+	if err != nil {
+		return nil, err
+	}*/
+	return &dto.LoginResponse{AccessToken: accessToken, RefreshToken: "gfff"/*refreshToken*/}, nil
 }
