@@ -2,7 +2,7 @@ package auth
 
 import (
 	"cloud-storage/internal/auth/dto"
-	"cloud-storage/internal/auth/jwt"
+	"cloud-storage/internal/jwt"
 	"context"
 
 	"golang.org/x/crypto/bcrypt"
@@ -50,7 +50,7 @@ func (s *Service) Login(ctx context.Context, email, password string) (*dto.Login
 	if err != nil {
 		return nil, ErrInvalidCredentials
 	}
-	token, err := s.jwt.Generate(user.ID)
+	token, err := s.jwt.GenerateAccessToken(user.ID)
 	if err != nil {
 		return  nil, err
 	}

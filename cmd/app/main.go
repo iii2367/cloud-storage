@@ -5,7 +5,7 @@ import (
 	"log"
 	authHttp "cloud-storage/internal/auth/http"
 	"cloud-storage/internal/auth"
-	"cloud-storage/internal/auth/jwt"
+	"cloud-storage/internal/jwt"
 	"cloud-storage/internal/auth/postgres"
 	"cloud-storage/internal/config"
 	"cloud-storage/internal/database"
