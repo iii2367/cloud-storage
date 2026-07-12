@@ -10,4 +10,8 @@ func RegisterRoutes(r *gin.Engine, h *Handler) {
 		auth.POST("/signup", h.Signup)
 		auth.POST("/login", h.Login)
 	}
+
+	r.GET("/", func(c *gin.Context) {
+		c.File("./web/test_auth.html")
+	})
 }

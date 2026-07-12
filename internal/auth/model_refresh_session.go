@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type RefreshSession struct {
+type Session struct {
     SessionID 	uuid.UUID
     UserID 		uint
     TokenHash 	string
