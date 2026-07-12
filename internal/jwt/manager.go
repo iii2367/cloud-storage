@@ -62,12 +62,12 @@ func (m *Manager) ParseAccessToken(tokenString string) (*AccessClaims, error) {
     return claims, nil
 }
 
-func (m *Manager) GenerateRefreshToken(userID uint) (string, *RefreshClaims, error) {
+func (m *Manager) GenerateRefreshToken(userID uint, sessionID uuid.UUID) (string, error) {
 	now := time.Now()
 
 	claims := RefreshClaims {
 		UserID: userID,
-		SessionID: uuid.New(),
+		SessionID: sessionID,
 		RegisteredClaims: jwt.RegisteredClaims {
             Issuer:    m.issuer,
             ExpiresAt: jwt.NewNumericDate(now.Add(m.refreshTTL)),
@@ -77,10 +77,10 @@ func (m *Manager) GenerateRefreshToken(userID uint) (string, *RefreshClaims, err
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(m.refreshSecret)
 	if err != nil {
-		return "", nil, err
+		return "", err
 	}
 
-    return tokenString, &claims, nil
+    return tokenString, nil
 }
 
 func (m *Manager) ParseRefreshToken(tokenString string) (*RefreshClaims, error) {

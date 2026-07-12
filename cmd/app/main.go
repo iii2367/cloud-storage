@@ -21,9 +21,10 @@ func main() {
 	}
 	defer db.Close()
 
-	repo := postgres.NewUserRepository(db)
+	userRepo := postgres.NewUserRepository(db)
+	sessionRepo := postgres.NewSessionRepository(db)
 	jwtManager := jwt.New(cfg.JWT)
-	service := auth.NewService(repo, jwtManager)
+	service := auth.NewService(userRepo, sessionRepo, jwtManager)
 	handler := authHttp.NewHandler(service)
 	router := gin.Default()
 

@@ -1,6 +1,6 @@
 package dto
 
-type SignUpRequest struct {
+type SignupRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -8,5 +8,5 @@ type SignUpRequest struct {
 
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6"`
+	Password string `json:"password" binding:"required,min=3"`
 }

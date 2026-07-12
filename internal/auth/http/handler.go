@@ -18,13 +18,13 @@ func NewHandler(service *auth.Service) *Handler {
 }
 
 func (h *Handler) Signup(c *gin.Context) {
-	var req dto.SignUpRequest
+	var req dto.SignupRequest
 	err := c.ShouldBindJSON(&req);
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = h.service.Signup(
+	signupResponse, err := h.service.Signup(
 		c.Request.Context(),
 		req.Name,
 		req.Email,
@@ -34,7 +34,7 @@ func (h *Handler) Signup(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, signupResponse)
 }
 
 func (h *Handler) Login(c *gin.Context) {
@@ -44,7 +44,7 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	loginResponse, err := h.service.Login(
+	loginResponse, tokens, err := h.service.Login(
 		c.Request.Context(),
 		req.Email,
 		req.Password,
@@ -53,5 +53,14 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
+	http.SetCookie(c.Writer, &http.Cookie{
+    	Name:     "refresh_token",
+	    Value:    tokens.RefreshToken,
+    	Path:     "/",
+	    HttpOnly: true,
+    	Secure:   false, // true when https
+	    SameSite: http.SameSiteLaxMode,
+    	MaxAge:   60 * 60 * 24 * 30,
+	})	
 	c.JSON(http.StatusOK, loginResponse)
 }

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"time"
+	"net"
 	"github.com/google/uuid"
 )
 
@@ -10,9 +11,9 @@ type Session struct {
     UserID 		uint
     TokenHash 	string
     ExpiresAt 	time.Time
-    CreatedAt 	time.Time
+    CreatedAt	time.Time
     LastUsedAt 	time.Time
     Revoked 	bool
     UserAgent 	string
-    IPAddress 	string
+    IPAddress 	net.IP
 }
