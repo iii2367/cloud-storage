@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	authHttp "cloud-storage/internal/auth/http"
-	"cloud-storage/internal/auth"
-	"cloud-storage/internal/jwt"
-	"cloud-storage/internal/auth/postgres"
+	"cloud-storage/internal/auth/repository/postgres"
+	"cloud-storage/internal/auth/service"
+	authHttp "cloud-storage/internal/auth/transport/http"
 	"cloud-storage/internal/config"
 	"cloud-storage/internal/database"
+	"cloud-storage/internal/jwt"
+	"fmt"
+	"log"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +25,7 @@ func main() {
 	userRepo := postgres.NewUserRepository(db)
 	sessionRepo := postgres.NewSessionRepository(db)
 	jwtManager := jwt.New(cfg.JWT)
-	service := auth.NewService(userRepo, sessionRepo, jwtManager)
+	service := service.NewService(userRepo, sessionRepo, jwtManager)
 	handler := authHttp.NewHandler(service)
 	router := gin.Default()
 

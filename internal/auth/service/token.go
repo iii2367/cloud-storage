@@ -1,7 +1,7 @@
-package auth
+package service
 
 import (
-	"cloud-storage/internal/jwt"
+	"time"
 	"crypto/sha256"
     "encoding/hex"
 	"github.com/google/uuid"
@@ -10,7 +10,7 @@ import (
 type TokenPair struct {
     AccessToken  string
     RefreshToken string
-	RefreshClaims *jwt.RefreshClaims
+	RefreshExpiresAt time.Time
 }
 
 func (s *Service) issueTokens(userID uint, sessionID uuid.UUID) (*TokenPair, error) {
@@ -23,9 +23,9 @@ func (s *Service) issueTokens(userID uint, sessionID uuid.UUID) (*TokenPair, err
 		return nil, err
 	}
 	return &TokenPair{
-		AccessToken: 	accessToken,
-		RefreshToken: 	refreshToken,
-		RefreshClaims: 	refreshClaims,
+		AccessToken: 		accessToken,
+		RefreshToken: 		refreshToken,
+		RefreshExpiresAt: 	refreshClaims.ExpiresAt.Time,
 	}, nil
 }
 

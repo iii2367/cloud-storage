@@ -1,18 +1,19 @@
 package http
 
 import (
-	"net/http"
+	"cloud-storage/internal/auth/dto"
+	"cloud-storage/internal/auth/service"
 	"net"
-	"cloud-storage/internal/auth"	
-	"cloud-storage/internal/auth/dto"	
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	service	*auth.Service
+	service	*service.Service
 }
 
-func NewHandler(service *auth.Service) *Handler {
+func NewHandler(service *service.Service) *Handler {
 	return &Handler {
 		service: service,	
 	}
@@ -49,7 +50,7 @@ func (h *Handler) Login(c *gin.Context) {
 		c.Request.Context(),
 		req.Email,
 		req.Password,
-		auth.LoginMeta{
+		service.LoginMeta{
 			UserAgent:  c.Request.UserAgent(),
 			IP:			net.ParseIP(c.ClientIP()),
 		},
@@ -61,7 +62,7 @@ func (h *Handler) Login(c *gin.Context) {
 	setRefreshCookie(
     	c.Writer,
     	tokens.RefreshToken,
-    	tokens.RefreshClaims.ExpiresAt.Time,
+    	tokens.RefreshExpiresAt,
 	)	
 	c.JSON(http.StatusOK, loginResponse)
 }

@@ -1,10 +1,11 @@
 package postgres
 
 import (
+	"cloud-storage/internal/auth/entity"
+	"cloud-storage/internal/auth/repository"
 	"context"
-	"fmt"
 	"errors"
-	"cloud-storage/internal/auth"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,7 +15,7 @@ type UserRepository struct {
     db *pgxpool.Pool
 }
 
-var _ auth.UserRepository = (*UserRepository)(nil)
+var _ repository.UserRepository = (*UserRepository)(nil)
 
 func NewUserRepository(db *pgxpool.Pool) *UserRepository {
     return &UserRepository {
@@ -22,7 +23,7 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
     }
 }
 
-func (r *UserRepository) Create(ctx context.Context, user *auth.User) error {
+func (r *UserRepository) Create(ctx context.Context, user *entity.User) error {
 	query := `
         INSERT INTO users (name, email, password_hash)
         VALUES ($1, $2, $3)
@@ -41,16 +42,16 @@ func (r *UserRepository) Create(ctx context.Context, user *auth.User) error {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == "23505" {
-				return auth.ErrEmailAlreadyExists
+				return repository.ErrEmailAlreadyExists
 			}
 		}
-		return fmt.Errorf("%w: create user: %w", auth.ErrRepository, err)
+		return fmt.Errorf("%w: create user: %w", repository.ErrRepository, err)
 	}
 	return nil
 }
 
-func (r *UserRepository) FindByID(ctx context.Context, id uint) (*auth.User, error) {
-	var user auth.User
+func (r *UserRepository) FindByID(ctx context.Context, id uint) (*entity.User, error) {
+	var user entity.User
 
     err := r.db.QueryRow(
         ctx,
@@ -69,16 +70,16 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint) (*auth.User, err
     )
 
    	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, auth.ErrUserNotFound
+		return nil, repository.ErrUserNotFound
 	}
 	if err != nil {
-		return nil, fmt.Errorf("%w: find user by id: %w", auth.ErrRepository, err)
+		return nil, fmt.Errorf("%w: find user by id: %w", repository.ErrRepository, err)
 	}
 	return &user, nil 
 }
 
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*auth.User, error) {
-	var user auth.User
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
+	var user entity.User
 
     err := r.db.QueryRow(
         ctx,
@@ -97,10 +98,10 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*auth.U
     )
 
   	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, auth.ErrUserNotFound
+		return nil, repository.ErrUserNotFound
 	}
 	if err != nil {
-		return nil, fmt.Errorf("%w: find user by email: %w", auth.ErrRepository, err)
+		return nil, fmt.Errorf("%w: find user by email: %w", repository.ErrRepository, err)
 	}
 	return &user, nil 
 }
