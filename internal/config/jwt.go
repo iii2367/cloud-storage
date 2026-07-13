@@ -6,20 +6,29 @@ import (
 )
 
 type JWT struct {
-    Secret 	 []byte			
-    Expires  time.Duration	
-    Issuer   string			
+    AccessSecret  	[]byte
+	RefreshSecret	[]byte
+	AccessTTL		time.Duration
+	RefreshTTL		time.Duration
+    Issuer   		string			
 }
 
 func MustLoadJWT(prefix string) *JWT {
-	expires, err := time.ParseDuration(mustEnv(prefix + "_JWT_EXPIRES"))
+	accessTTL, err := time.ParseDuration(mustEnv(prefix + "_JWT_ACCESSTTL"))
 	if err != nil {
-		log.Fatalf("invalid %s_JWT_EXPIRES: %v", prefix, err)
+		log.Fatalf("invalid %s_JWT_ACCESSTTL: %v", prefix, err)
+	}
+	refreshTTL, err := time.ParseDuration(mustEnv(prefix + "_JWT_REFRESHTTL"))
+	if err != nil {
+		log.Fatalf("invalid %s_JWT_REFRESHTTL: %v", prefix, err)
 	}
 
+
 	return &JWT {
-		Secret:  []byte(mustEnv(prefix + "_JWT_SECRET")),
-		Expires: expires,
-		Issuer:  mustEnv(prefix + "_JWT_ISSUER"),
+		AccessSecret:   []byte(mustEnv(prefix + "_JWT_ACCESS_SECRET")),
+		RefreshSecret: 	[]byte(mustEnv(prefix + "_JWT_REFRESH_SECRET")),
+		AccessTTL:		accessTTL,
+		RefreshTTL: 	refreshTTL,
+		Issuer:     	mustEnv(prefix + "_JWT_ISSUER"),
 	}
 }

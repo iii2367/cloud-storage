@@ -1,0 +1,258 @@
+package postgres
+
+import (	
+	"cloud-storage/internal/auth/entity"
+	"cloud-storage/internal/auth/repository"
+	"context"
+	"errors"
+	"fmt"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+type SessionRepository struct {
+    db *pgxpool.Pool
+}
+
+var _ repository.SessionRepository = (*SessionRepository)(nil)
+
+func NewSessionRepository(db *pgxpool.Pool) *SessionRepository {
+    return &SessionRepository {
+        db: db,
+    }
+}
+
+func (r *SessionRepository) Create(ctx context.Context, session *entity.Session) error {
+	query := `
+        INSERT INTO sessions (id, user_id, token_hash, expires_at, user_agent, ip_address)
+        VALUES ($1, $2, $3, $4, $5, $6)
+    `
+	_, err := r.db.Exec(
+		ctx,
+		query,
+		session.SessionID,
+		session.UserID,
+		session.TokenHash,
+		session.ExpiresAt,
+		session.UserAgent,
+		session.IPAddress,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: create session: %w", repository.ErrRepository, err)
+	}
+	return nil
+}
+	
+func (r *SessionRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Session, error) {
+	query := `
+		SELECT 
+			id, user_id, token_hash, expires_at, created_at, 
+			last_used_at, revoked_at, user_agent, ip_address
+		FROM sessions
+		WHERE id = $1	
+	`
+	var session entity.Session
+
+	err := r.db.QueryRow(
+		ctx,
+		query,
+		id,
+	).Scan(
+		&session.SessionID,
+		&session.UserID,
+		&session.TokenHash,
+		&session.ExpiresAt,
+		&session.CreatedAt,
+		&session.LastUsedAt,
+		&session.RevokedAt,
+		&session.UserAgent,
+		&session.IPAddress,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) { return nil, repository.ErrSessionNotFound }
+		return nil, fmt.Errorf("%w: find session by id: %w", repository.ErrRepository, err)
+	}
+	return &session, nil 
+}
+
+func (r *SessionRepository) FindByTokenHash(ctx context.Context, hash string) (*entity.Session, error) {
+	query := `
+		SELECT 
+			id, user_id, token_hash, expires_at, created_at, 
+			last_used_at, revoked_at, user_agent, ip_address
+		FROM sessions
+		WHERE token_hash = $1	
+	`
+	var session entity.Session
+
+	err := r.db.QueryRow(
+		ctx,
+		query,
+		hash,
+	).Scan(
+		&session.SessionID,
+		&session.UserID,
+		&session.TokenHash,
+		&session.ExpiresAt,
+		&session.CreatedAt,
+		&session.LastUsedAt,
+		&session.RevokedAt,
+		&session.UserAgent,
+		&session.IPAddress,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) { return nil, repository.ErrSessionNotFound }
+		return nil, fmt.Errorf("%w: find session by token hash: %w", repository.ErrRepository, err)
+	}
+	return &session, nil 
+}
+	
+func (r *SessionRepository) FindByUserID(ctx context.Context, id uint) ([]*entity.Session, error) {
+	query := `
+		SELECT 
+			id, user_id, token_hash, expires_at, created_at, 
+			last_used_at, revoked_at, user_agent, ip_address
+		FROM sessions
+		WHERE user_id = $1	
+	`
+	rows, err := r.db.Query(
+		ctx,
+		query,
+		id,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%w: find sessions by user id: %w", repository.ErrRepository, err)
+	}
+	defer rows.Close()
+
+	sessions := make([]*entity.Session, 0)
+
+	for rows.Next() {
+		var session entity.Session
+
+		err := rows.Scan(
+			&session.SessionID,
+			&session.UserID,
+			&session.TokenHash,
+			&session.ExpiresAt,
+			&session.CreatedAt,
+			&session.LastUsedAt,
+			&session.RevokedAt,
+			&session.UserAgent,
+			&session.IPAddress,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("%w: scan session: %w", repository.ErrRepository, err)
+		}
+
+		sessions = append(sessions, &session)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("%w: iterate sessions: %w", repository.ErrRepository, err)
+	}
+	return sessions, nil
+}
+	
+func (r *SessionRepository) UpdateTokenHash(ctx context.Context, id uuid.UUID, hash string,) error {
+    query := `
+        UPDATE sessions
+        SET token_hash = $2
+        WHERE id = $1
+    `
+    result, err := r.db.Exec(
+        ctx,
+        query,
+        id,
+        hash,
+    )
+    if err != nil {
+        return fmt.Errorf("%w: update token hash: %w",
+            repository.ErrRepository,
+            err,
+        )
+    }
+    if result.RowsAffected() == 0 {
+        return repository.ErrSessionNotFound
+    }
+    return nil
+}
+
+func (r *SessionRepository) UpdateLastUsedAt(ctx context.Context, id uuid.UUID) error {
+	query := `
+		UPDATE sessions
+		SET last_used_at = now()
+		WHERE id = $1
+	`
+	result, err := r.db.Exec(
+		ctx,
+		query,
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: update last used at: %w", repository.ErrRepository, err)
+	}
+	rowsAffected := result.RowsAffected()
+	if rowsAffected == 0 {
+		return repository.ErrSessionNotFound
+	}
+	return nil
+}
+	
+func (r *SessionRepository) Revoke(ctx context.Context, id uuid.UUID) error {
+	query := `
+		UPDATE sessions
+		SET revoked_at = COALESCE(revoked_at, now())
+		WHERE id = $1
+	`
+	result, err := r.db.Exec(
+		ctx,
+		query,
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: revoke session: %w", repository.ErrRepository, err)
+	}
+	rowsAffected := result.RowsAffected()
+	if rowsAffected == 0 {
+		return repository.ErrSessionNotFound
+	}
+	return nil
+
+}
+	
+func (r *SessionRepository) RevokeAllByUserID(ctx context.Context, id uint) error {
+	query := `
+		UPDATE sessions
+		SET revoked_at = COALESCE(revoked_at, now())
+		WHERE user_id = $1
+	`
+	result, err := r.db.Exec(
+		ctx,
+		query,
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: revoke user sessions: %w", repository.ErrRepository, err)
+	}
+	if result.RowsAffected() == 0 {
+		return repository.ErrSessionNotFound
+	}
+	return nil
+}
+	
+func (r *SessionRepository) DeleteExpired(ctx context.Context) (int64, error) {
+	query := `
+		DELETE FROM sessions
+		WHERE expires_at <= now()
+	`
+	result, err := r.db.Exec(
+		ctx,
+		query,
+	)
+
+	if err != nil {
+        return 0, fmt.Errorf("%w: delete expired sessions: %w", repository.ErrRepository, err)
+    }
+    return result.RowsAffected(), nil
+}

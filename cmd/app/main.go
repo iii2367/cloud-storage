@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	authHttp "cloud-storage/internal/auth/http"
-	"cloud-storage/internal/auth"
-	"cloud-storage/internal/auth/jwt"
-	"cloud-storage/internal/auth/postgres"
+	"cloud-storage/internal/auth/repository/postgres"
+	"cloud-storage/internal/auth/service"
+	authHttp "cloud-storage/internal/auth/transport/http"
 	"cloud-storage/internal/config"
 	"cloud-storage/internal/database"
+	"cloud-storage/internal/jwt"
+	"fmt"
+	"log"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,13 +22,18 @@ func main() {
 	}
 	defer db.Close()
 
-	repo := postgres.New(db)
+	userRepo := postgres.NewUserRepository(db)
+	sessionRepo := postgres.NewSessionRepository(db)
 	jwtManager := jwt.New(cfg.JWT)
-	service := auth.NewService(repo, jwtManager)
+	service := service.NewService(userRepo, sessionRepo, jwtManager)
 	handler := authHttp.NewHandler(service)
 	router := gin.Default()
 
 	authHttp.RegisterRoutes(router, handler)
+	router.GET("/", func(c *gin.Context) {
+		c.File("./web/test_auth.html")
+	})
+
 	addr := fmt.Sprintf("%s:%s",
 		cfg.Server.Host,
 		cfg.Server.Port,

@@ -1,30 +1,32 @@
 package http
 
 import (
+	"cloud-storage/internal/auth/dto"
+	"cloud-storage/internal/auth/service"
+	"net"
 	"net/http"
-	"cloud-storage/internal/auth"	
-	"cloud-storage/internal/auth/dto"	
+
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	service	*auth.Service
+	service	*service.Service
 }
 
-func NewHandler(service *auth.Service) *Handler {
+func NewHandler(service *service.Service) *Handler {
 	return &Handler {
 		service: service,	
 	}
 }
 
 func (h *Handler) Signup(c *gin.Context) {
-	var req dto.SignUpRequest
+	var req dto.SignupRequest
 	err := c.ShouldBindJSON(&req);
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = h.service.Signup(
+	signupResponse, err := h.service.Signup(
 		c.Request.Context(),
 		req.Name,
 		req.Email,
@@ -34,7 +36,7 @@ func (h *Handler) Signup(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, signupResponse)
 }
 
 func (h *Handler) Login(c *gin.Context) {
@@ -43,15 +45,24 @@ func (h *Handler) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
-	loginResponse, err := h.service.Login(
+	}	
+	loginResponse, tokens, err := h.service.Login(
 		c.Request.Context(),
 		req.Email,
 		req.Password,
+		service.LoginMeta{
+			UserAgent:  c.Request.UserAgent(),
+			IP:			net.ParseIP(c.ClientIP()),
+		},
 	)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
+	setRefreshCookie(
+    	c.Writer,
+    	tokens.RefreshToken,
+    	tokens.RefreshExpiresAt,
+	)	
 	c.JSON(http.StatusOK, loginResponse)
 }
