@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Service) Signup(ctx context.Context, name, email, password string) (*dto.SignupResponse, error) {
+func (s *Service) Signup(ctx context.Context, name, email, password string) (*dto.UserResponse, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -23,5 +23,5 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (*dt
 	if err != nil {
 		return nil, err
 	}
-	return &dto.SignupResponse{Name: name, Email: email, CreatedAt: time.Now()}, nil
+	return &dto.UserResponse{Name: name, Email: email, CreatedAt: time.Now()}, nil
 } 
