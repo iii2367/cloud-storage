@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"net"
 	"cloud-storage/internal/auth"	
 	"cloud-storage/internal/auth/dto"	
 	"github.com/gin-gonic/gin"
@@ -43,24 +44,24 @@ func (h *Handler) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
+	}	
 	loginResponse, tokens, err := h.service.Login(
 		c.Request.Context(),
 		req.Email,
 		req.Password,
+		auth.LoginMeta{
+			UserAgent:  c.Request.UserAgent(),
+			IP:			net.ParseIP(c.ClientIP()),
+		},
 	)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
-	http.SetCookie(c.Writer, &http.Cookie{
-    	Name:     "refresh_token",
-	    Value:    tokens.RefreshToken,
-    	Path:     "/",
-	    HttpOnly: true,
-    	Secure:   false, // true when https
-	    SameSite: http.SameSiteLaxMode,
-    	MaxAge:   60 * 60 * 24 * 30,
-	})	
+	setRefreshCookie(
+    	c.Writer,
+    	tokens.RefreshToken,
+    	tokens.RefreshClaims.ExpiresAt.Time,
+	)	
 	c.JSON(http.StatusOK, loginResponse)
 }

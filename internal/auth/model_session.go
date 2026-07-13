@@ -13,7 +13,7 @@ type Session struct {
     ExpiresAt 	time.Time
     CreatedAt	time.Time
     LastUsedAt 	time.Time
-    Revoked 	bool
+    RevokedAt 	*time.Time
     UserAgent 	string
     IPAddress 	net.IP
 }

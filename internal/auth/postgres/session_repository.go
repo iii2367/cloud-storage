@@ -47,7 +47,7 @@ func (r *SessionRepository) FindByID(ctx context.Context, id uuid.UUID) (*auth.S
 	query := `
 		SELECT 
 			id, user_id, token_hash, expires_at, created_at, 
-			last_used_at, revoked, user_agent, ip_address
+			last_used_at, revoked_at, user_agent, ip_address
 		FROM sessions
 		WHERE id = $1	
 	`
@@ -64,7 +64,7 @@ func (r *SessionRepository) FindByID(ctx context.Context, id uuid.UUID) (*auth.S
 		&session.ExpiresAt,
 		&session.CreatedAt,
 		&session.LastUsedAt,
-		&session.Revoked,
+		&session.RevokedAt,
 		&session.UserAgent,
 		&session.IPAddress,
 	)
@@ -79,7 +79,7 @@ func (r *SessionRepository) FindByTokenHash(ctx context.Context, hash string) (*
 	query := `
 		SELECT 
 			id, user_id, token_hash, expires_at, created_at, 
-			last_used_at, revoked, user_agent, ip_address
+			last_used_at, revoked_at, user_agent, ip_address
 		FROM sessions
 		WHERE token_hash = $1	
 	`
@@ -96,7 +96,7 @@ func (r *SessionRepository) FindByTokenHash(ctx context.Context, hash string) (*
 		&session.ExpiresAt,
 		&session.CreatedAt,
 		&session.LastUsedAt,
-		&session.Revoked,
+		&session.RevokedAt,
 		&session.UserAgent,
 		&session.IPAddress,
 	)
@@ -111,7 +111,7 @@ func (r *SessionRepository) FindByUserID(ctx context.Context, id uint) ([]*auth.
 	query := `
 		SELECT 
 			id, user_id, token_hash, expires_at, created_at, 
-			last_used_at, revoked, user_agent, ip_address
+			last_used_at, revoked_at, user_agent, ip_address
 		FROM sessions
 		WHERE user_id = $1	
 	`
@@ -137,7 +137,7 @@ func (r *SessionRepository) FindByUserID(ctx context.Context, id uint) ([]*auth.
 			&session.ExpiresAt,
 			&session.CreatedAt,
 			&session.LastUsedAt,
-			&session.Revoked,
+			&session.RevokedAt,
 			&session.UserAgent,
 			&session.IPAddress,
 		)
@@ -153,6 +153,30 @@ func (r *SessionRepository) FindByUserID(ctx context.Context, id uint) ([]*auth.
 	return sessions, nil
 }
 	
+func (r *SessionRepository) UpdateTokenHash(ctx context.Context, id uuid.UUID, hash string,) error {
+    query := `
+        UPDATE sessions
+        SET token_hash = $2
+        WHERE id = $1
+    `
+    result, err := r.db.Exec(
+        ctx,
+        query,
+        id,
+        hash,
+    )
+    if err != nil {
+        return fmt.Errorf("%w: update token hash: %w",
+            auth.ErrRepository,
+            err,
+        )
+    }
+    if result.RowsAffected() == 0 {
+        return auth.ErrSessionNotFound
+    }
+    return nil
+}
+
 func (r *SessionRepository) UpdateLastUsedAt(ctx context.Context, id uuid.UUID) error {
 	query := `
 		UPDATE sessions
@@ -177,7 +201,7 @@ func (r *SessionRepository) UpdateLastUsedAt(ctx context.Context, id uuid.UUID) 
 func (r *SessionRepository) Revoke(ctx context.Context, id uuid.UUID) error {
 	query := `
 		UPDATE sessions
-		SET revoked = true
+		SET revoked_at = now()
 		WHERE id = $1
 	`
 	result, err := r.db.Exec(
@@ -199,7 +223,7 @@ func (r *SessionRepository) Revoke(ctx context.Context, id uuid.UUID) error {
 func (r *SessionRepository) RevokeAllByUserID(ctx context.Context, id uint) error {
 	query := `
 		UPDATE sessions
-		SET revoked = true
+		SET revoked_at = now()
 		WHERE user_id = $1
 	`
 	result, err := r.db.Exec(
@@ -216,17 +240,18 @@ func (r *SessionRepository) RevokeAllByUserID(ctx context.Context, id uint) erro
 	return nil
 }
 	
-func (r *SessionRepository) DeleteExpired(ctx context.Context) error {
+func (r *SessionRepository) DeleteExpired(ctx context.Context) (int64, error) {
 	query := `
 		DELETE FROM sessions
 		WHERE expires_at <= now()
 	`
-	_, err := r.db.Exec(
+	result, err := r.db.Exec(
 		ctx,
 		query,
 	)
+
 	if err != nil {
-		return fmt.Errorf("%w: delete expired sessions: %w", auth.ErrRepository, err)
-	}
-	return nil
+        return 0, fmt.Errorf("%w: delete expired sessions: %w", auth.ErrRepository, err)
+    }
+    return result.RowsAffected(), nil
 }

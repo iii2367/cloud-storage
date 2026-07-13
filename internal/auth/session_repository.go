@@ -10,8 +10,9 @@ type SessionRepository interface {
 	FindByID(ctx context.Context, id uuid.UUID) (*Session, error)
 	FindByTokenHash(ctx context.Context, hash string) (*Session, error)
 	FindByUserID(ctx context.Context, id uint) ([]*Session, error)
+	UpdateTokenHash(ctx context.Context, id uuid.UUID, hash string) error
 	UpdateLastUsedAt(ctx context.Context, id uuid.UUID) error
 	Revoke(ctx context.Context, id uuid.UUID) error
 	RevokeAllByUserID(ctx context.Context, id uint) error
-	DeleteExpired(ctx context.Context) error
+	DeleteExpired(ctx context.Context) (int64, error)
 }

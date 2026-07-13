@@ -5,7 +5,7 @@ CREATE TABLE sessions (
     expires_at      TIMESTAMPTZ NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_used_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-    revoked         BOOLEAN NOT NULL DEFAULT FALSE,
+    revoked_at      TIMESTAMPTZ,
     user_agent      TEXT,
     ip_address      INET NOT NULL
 )

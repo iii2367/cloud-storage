@@ -1,12 +1,13 @@
 package auth
 
 import (
-	"time"
-	"context"
 	"cloud-storage/internal/auth/dto"
 	"cloud-storage/internal/jwt"
-	"golang.org/x/crypto/bcrypt"
+	"context"
+	"time"
+	"net"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
@@ -15,14 +16,20 @@ type Service struct {
 	jwtManager  *jwt.Manager
 }
 
+type LoginMeta struct {
+    UserAgent string
+    IP        net.IP
+}
+
 func NewService(
 	userRepo 	UserRepository,
 	sessionRepo SessionRepository,
 	jwtManager 	*jwt.Manager,
 ) *Service {
 	return &Service {
-		userRepo: 	userRepo,
-		jwtManager: jwtManager,
+		userRepo: 		userRepo,
+		sessionRepo: 	sessionRepo,
+		jwtManager: 	jwtManager,
 	}
 }
 
@@ -43,7 +50,7 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (*dt
 	return &dto.SignupResponse{Name: name, Email: email, CreatedAt: time.Now()}, nil
 } 
 
-func (s *Service) Login(ctx context.Context, email, password string) (*dto.LoginResponse, *tokenPair, error) {
+func (s *Service) Login(ctx context.Context, email, password string, meta LoginMeta) (*dto.LoginResponse, *TokenPair, error) {
 
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
@@ -56,24 +63,24 @@ func (s *Service) Login(ctx context.Context, email, password string) (*dto.Login
 	if err != nil {
 		return nil, nil, ErrInvalidCredentials
 	}
-	tokens, err := s.issueTokens(ctx, user.ID, uuid.New())
+	sid := uuid.New()
+	tokens, err := s.issueTokens(user.ID, sid)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	session := &Session{
+		SessionID: 	sid,
+		UserID: 	user.ID,
+		TokenHash: 	HashToken(tokens.RefreshToken),
+		ExpiresAt: 	tokens.RefreshClaims.ExpiresAt.Time,
+		UserAgent: 	meta.UserAgent,
+		IPAddress:  meta.IP,
+	}
+	err = s.sessionRepo.Create(ctx, session)
+	if err != nil {
+		return nil, nil, err
+	}
 	
 	return &dto.LoginResponse{AccessToken: tokens.AccessToken}, tokens, nil
-}
-
-type tokenPair struct {
-    AccessToken  string
-    RefreshToken string
-}
-
-func (s *Service) issueTokens(ctx context.Context, userID uint, sessionID uuid.UUID) (*tokenPair, error) {
-	accessToken, err := s.jwtManager.GenerateAccessToken(userID)
-	if err != nil {
-		return  nil, err
-	}
-	refreshToken, err := s.jwtManager.GenerateRefreshToken(userID, sessionID)
-	if err != nil {
-		return nil, err
-	}
-	return &tokenPair{AccessToken: accessToken, RefreshToken: refreshToken}, nil
 }

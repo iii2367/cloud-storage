@@ -29,6 +29,10 @@ func main() {
 	router := gin.Default()
 
 	authHttp.RegisterRoutes(router, handler)
+	router.GET("/", func(c *gin.Context) {
+		c.File("./web/test_auth.html")
+	})
+
 	addr := fmt.Sprintf("%s:%s",
 		cfg.Server.Host,
 		cfg.Server.Port,
