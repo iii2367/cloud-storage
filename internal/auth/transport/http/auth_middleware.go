@@ -22,6 +22,7 @@ func (h *Middleware) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("userID", claims.UserID)
+		c.Set("sessionID", claims.SessionID)
 
 		c.Next()
 	}

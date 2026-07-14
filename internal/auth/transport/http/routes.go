@@ -9,9 +9,15 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 	{
 		auth.POST("/signup", h.Signup)
 		auth.POST("/login", h.Login)
-	
 		auth.POST("/refresh", h.Refresh)
-
-		auth.GET("/me", m.AuthMiddleware(), h.GetMe)
+		auth.POST("/logout", h.Logout)
 	}
+	users := r.Group("/users")
+	users.Use(m.AuthMiddleware())
+	{
+		users.GET("/me", h.GetMe)
+//		users.PATCH("/me", h.UpdateMe)
+		users.DELETE("/me", h.DeleteMe)
+	}	
 }
+
