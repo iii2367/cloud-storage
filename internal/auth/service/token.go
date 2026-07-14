@@ -14,7 +14,7 @@ type TokenPair struct {
 }
 
 func (s *Service) issueTokens(userID uint, sessionID uuid.UUID) (*TokenPair, error) {
-	accessToken, err := s.jwtManager.GenerateAccessToken(userID)
+	accessToken, err := s.jwtManager.GenerateAccessToken(userID, sessionID)
 	if err != nil {
 		return  nil, err
 	}

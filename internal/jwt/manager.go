@@ -25,11 +25,12 @@ func New(cfg config.JWT) *Manager {
     }
 }
 
-func (m *Manager) GenerateAccessToken(userID uint) (string, error) {
+func (m *Manager) GenerateAccessToken(userID uint, sessionID uuid.UUID) (string, error) {
 	now := time.Now()
 
     claims := AccessClaims {
 		UserID:		userID, 
+		SessionID:  sessionID,
         RegisteredClaims: jwt.RegisteredClaims {
             Issuer:    m.issuer,
             ExpiresAt: jwt.NewNumericDate(now.Add(m.accessTTL)),

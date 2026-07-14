@@ -7,6 +7,7 @@ import (
 
 type AccessClaims struct {
 	UserID		uint	`json:"user_id"` 
+	SessionID uuid.UUID `json:"sid"`
 
     jwt.RegisteredClaims
 }

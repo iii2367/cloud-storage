@@ -1,12 +1,19 @@
 package service
 
-import (	
+import (
 	"cloud-storage/internal/auth/dto"
 	"context"
+
+	"github.com/google/uuid"
 )
 
 
-func (s *Service) GetMe(ctx context.Context, userID uint) (*dto.UserResponse, error) {	
+func (s *Service) GetMe(ctx context.Context, userID uint, sessionID uuid.UUID) (*dto.UserResponse, error) {	
+	err := s.sessionRepo.UpdateLastUsedAt(ctx, sessionID)
+	if err != nil {
+		return  nil, err
+	}
+
 	user, err := s.userRepo.FindByID(ctx,userID)
 
 	if err != nil {

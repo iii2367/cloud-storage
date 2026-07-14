@@ -19,14 +19,23 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string) (*dto.TokenR
 		return nil, nil, err
 	}
 
+	if HashToken(refreshToken) != session.TokenHash {
+		return nil, nil, ErrInvalidRefreshToken
+	}
+
 	if session.RevokedAt != nil {
-    	_ = s.sessionRepo.RevokeAllByUserID(ctx, session.UserID)
+    	err = s.sessionRepo.RevokeAllByUserID(ctx, session.UserID)
+		if err != nil {
+			return nil, nil, err
+		}
     	return nil, nil, ErrRefreshTokenReuse
 	}
 
-	if session.RevokedAt != nil ||
-		time.Now().After(session.ExpiresAt) ||
-		HashToken(refreshToken) != session.TokenHash {
+	if time.Now().After(session.ExpiresAt) {
+		err = s.sessionRepo.Revoke(ctx, session.SessionID)
+		if err != nil {
+			return nil, nil, err
+		}
 		return nil, nil, ErrInvalidRefreshToken
 	}
 

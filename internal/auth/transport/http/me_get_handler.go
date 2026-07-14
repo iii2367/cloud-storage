@@ -2,16 +2,20 @@ package http
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) GetMe(c *gin.Context) {
 
-	userID := c.MustGet("userID").(uint)
+	userID 		:= c.MustGet("userID").(uint)
+	sessionID 	:= c.MustGet("sessionID").(uuid.UUID)
 
 	user, err := h.service.GetMe(
 		c.Request.Context(),
 		userID,
+		sessionID,
 	)
 
 	if err != nil {
