@@ -7,6 +7,7 @@ import (
 	"cloud-storage/internal/config"
 	"cloud-storage/internal/database"
 	"cloud-storage/internal/jwt"
+	"cloud-storage/internal/web"
 	"fmt"
 	"log"
 
@@ -26,21 +27,31 @@ func main() {
 	sessionRepo := postgres.NewSessionRepository(db)
 	jwtManager := jwt.New(cfg.JWT)
 	service := service.NewService(userRepo, sessionRepo, jwtManager)
+
 	handler := authHttp.NewHandler(service)
 	middleware := authHttp.NewMiddleware(jwtManager)
+
 	router := gin.Default()
+	
+	router.LoadHTMLGlob("web/pages/*")
+	router.Static("/static", "./web/static")	
 
 	authHttp.RegisterRoutes(router, handler, middleware)
-	router.GET("/", func(c *gin.Context) {
+	
+	webHandler := web.NewHandler()
+	web.RegisterRoutes(router, webHandler)
+
+	router.GET("/test_auth", func(c *gin.Context) {
 		c.File("./web/test_auth.html")
 	})
+
 
 	addr := fmt.Sprintf("%s:%s",
 		cfg.Server.Host,
 		cfg.Server.Port,
 	)
-
 	log.Println("server started on", addr)
+	
 	if err := router.Run(addr); err != nil {
 		log.Fatal(err)
 	}
