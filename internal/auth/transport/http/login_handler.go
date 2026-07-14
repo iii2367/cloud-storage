@@ -16,7 +16,7 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}	
-	loginResponse, tokens, err := h.service.Login(
+	tokenResponse, tokens, err := h.service.Login(
 		c.Request.Context(),
 		req.Email,
 		req.Password,
@@ -31,8 +31,9 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 	setRefreshCookie(
     	c.Writer,
+		c.Request,
     	tokens.RefreshToken,
     	tokens.RefreshExpiresAt,
 	)	
-	c.JSON(http.StatusOK, loginResponse)
+	c.JSON(http.StatusOK, tokenResponse)
 }

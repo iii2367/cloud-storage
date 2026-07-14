@@ -9,6 +9,8 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 	{
 		auth.POST("/signup", h.Signup)
 		auth.POST("/login", h.Login)
+	
+		auth.POST("/refresh", h.Refresh)
 
 		auth.GET("/me", m.AuthMiddleware(), h.GetMe)
 	}

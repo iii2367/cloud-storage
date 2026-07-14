@@ -2,7 +2,7 @@ package http
 
 import (	
 	"strings"
-
+	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,14 +11,14 @@ func (h *Middleware) AuthMiddleware() gin.HandlerFunc {
 		auth := c.GetHeader("Authorization")
 		
 		if !strings.HasPrefix(auth, "Bearer ") {
-			c.AbortWithStatusJSON(401, gin.H{ "error": "missing token" })
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{ "error": "missing token" })
 			return
 		}
 		token := strings.TrimPrefix(auth, "Bearer ")
 		
 		claims, err := h.jwtManager.ParseAccessToken(token)
 		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{ "error": "invalid token" })
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{ "error": "invalid token" })
 			return
 		}
 		c.Set("userID", claims.UserID)

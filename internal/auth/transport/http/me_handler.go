@@ -1,6 +1,7 @@
 package http
 
 import (
+	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,11 +15,11 @@ func (h *Handler) GetMe(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(500, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(200, user)
+	c.JSON(http.StatusOK, user)
 }

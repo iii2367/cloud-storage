@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Service) Login(ctx context.Context, email, password string, meta LoginMeta) (*dto.LoginResponse, *TokenPair, error) {
+func (s *Service) Login(ctx context.Context, email, password string, meta LoginMeta) (*dto.TokenResponse, *TokenPair, error) {
 
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
@@ -41,5 +41,5 @@ func (s *Service) Login(ctx context.Context, email, password string, meta LoginM
 		return nil, nil, err
 	}
 	
-	return &dto.LoginResponse{AccessToken: tokens.AccessToken}, tokens, nil
+	return &dto.TokenResponse{AccessToken: tokens.AccessToken}, tokens, nil
 }
