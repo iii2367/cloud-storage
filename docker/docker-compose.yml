@@ -4,6 +4,9 @@ services:
     image: postgres:17
     container_name: cloud-storage-db
 
+    ports:
+    - "5432:5432"
+
     environment:
       POSTGRES_DB: cloud_storage
       POSTGRES_USER: iii

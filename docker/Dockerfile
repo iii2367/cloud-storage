@@ -14,5 +14,6 @@ FROM alpine:3.20
 WORKDIR /app
 
 COPY --from=builder /app/cloud-storage .
+COPY --from=builder /app/web ./web
 
 CMD ["./cloud-storage"]

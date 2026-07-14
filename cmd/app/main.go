@@ -27,9 +27,10 @@ func main() {
 	jwtManager := jwt.New(cfg.JWT)
 	service := service.NewService(userRepo, sessionRepo, jwtManager)
 	handler := authHttp.NewHandler(service)
+	middleware := authHttp.NewMiddleware(jwtManager)
 	router := gin.Default()
 
-	authHttp.RegisterRoutes(router, handler)
+	authHttp.RegisterRoutes(router, handler, middleware)
 	router.GET("/", func(c *gin.Context) {
 		c.File("./web/test_auth.html")
 	})

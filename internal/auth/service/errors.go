@@ -3,5 +3,7 @@ package service
 import ("errors")
 
 var (
-	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidCredentials 	= errors.New("invalid credentials")
+	ErrInvalidRefreshToken 	= errors.New("invalid refresh token")
+	ErrRefreshTokenReuse	= errors.New("refresh token reuse")
 )

@@ -59,6 +59,19 @@
     <button onclick="login()">Login</button>
 </div>
 
+<div class="box">
+    <h3>Current user</h3>
+
+    <button onclick="getMe()">Get Me</button>
+</div>
+
+<div class="box">
+    <h3>Refresh</h3>
+
+    <button onclick="refresh()">Refresh</button>
+</div>
+
+
 
 <h3>Response:</h3>
 <pre id="result"></pre>
@@ -94,8 +107,7 @@ async function signup() {
     });
 }
 
-
-
+let accessToken
 async function login() {
 
     const response = await fetch("/auth/login", {
@@ -110,6 +122,48 @@ async function login() {
     });
 
     const data = await response.json();
+if (response.ok) {
+        accessToken = data.access_token;
+    }
+    show({
+        status: response.status,
+        response: data
+    });
+}
+
+async function getMe() {
+
+    const response = await fetch("/auth/me", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + accessToken
+        }
+    });
+
+
+    const data = await response.json();
+
+    show({
+        status: response.status,
+        response: data
+    });
+}
+
+async function refresh() {
+
+    const response = await fetch("/auth/refresh", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + accessToken
+        }
+    });
+
+
+    const data = await response.json();
+if (response.ok) {
+        accessToken = data.access_token;
+    }
+
 
     show({
         status: response.status,
