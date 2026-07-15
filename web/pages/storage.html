@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ .Title }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+        <link rel="stylesheet" href="/css/storage.css">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <script src="/js/toggleMenu.js"></script>
+    </head>
+    <body>
+        <header class="topbar">
+
+            <h2>{{ .Title }}</h2>
+
+            <div class="account">
+                <button class="account-btn" onclick="toggleMenu()">👤 My Account</button>
+
+                <div class="account-menu" id="accountMenu">
+
+                    <h3>Account</h3>
+
+                    <div class="info">
+                        <span>Name</span>
+                        <strong>TestName</strong>
+                    </div>
+
+                    <div class="info">
+                        <span>Email</span>
+                        <strong>test@mail.com</strong>
+                    </div>
+
+                    <div class="info">
+                        <span>Created</span>
+                        <strong>2026-07-15</strong>
+                    </div>
+
+                    <button class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="box manager">
+            
+            <div class="toolbar">
+
+                <button>+ Folder</button>
+    
+                <button>+ Upload</button>
+
+                <button>Back</button>
+
+            </div>
+
+            <div class="path">
+                Path: /
+            </div>
+            
+            <div class="files">
+                <div class="item folder">
+                    📁
+                    <span>Photos</span>
+               </div>
+
+                <div class="item folder">
+                    📁
+                    <span>Music</span>
+                </div>
+
+                <div class="item file">
+                    📄
+                    <span>notes.txt</span>
+                </div>
+
+                <div class="item file">
+                    📄
+                    <span>report.pdf</span>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>
