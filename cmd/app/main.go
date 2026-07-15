@@ -33,7 +33,7 @@ func main() {
 
 	router := gin.Default()
 	
-	router.LoadHTMLGlob("web/pages/*")
+	router.LoadHTMLGlob("web/templates/*")
 	router.Static("/css", "./web/static/css")	
 	router.Static("/js", "./web/static/js")	
 
@@ -43,7 +43,7 @@ func main() {
 	web.RegisterRoutes(router, webHandler)
 
 	router.GET("/test_auth", func(c *gin.Context) {
-		c.File("./web/pages/test_auth.html")
+		c.File("./web/templates/test_auth.html")
 	})
 
 
