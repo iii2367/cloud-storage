@@ -43,7 +43,7 @@ func main() {
 	web.RegisterRoutes(router, webHandler)
 
 	router.GET("/test_auth", func(c *gin.Context) {
-		c.File("./web/templates/test_auth.html")
+		c.File("./web/templates/test_auth_api.html")
 	})
 
 
