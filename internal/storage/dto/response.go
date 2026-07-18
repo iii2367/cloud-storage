@@ -4,6 +4,8 @@ import "time"
 
 type TreeNodeResponse struct {
 	ID          string             `json:"id"`
+	ParentID 	*string `json:"parent_id,omitempty"`
+
 	Name        string             `json:"name"`
 	FileType    string             `json:"file_type"`
 	MimeType    string             `json:"mime_type,omitempty"`
