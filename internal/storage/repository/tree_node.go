@@ -11,7 +11,7 @@ type TreeNodeRepository interface {
 	Create(ctx context.Context, node *entity.TreeNode) error
 	FindByID(ctx context.Context, id uuid.UUID) (*entity.TreeNode, error)
 	FindByUserID(ctx context.Context, id uint) ([]*entity.TreeNode, error)
-	FindByParentID(ctx context.Context, id uuid.UUID) ([]*entity.TreeNode, error)
+	FindByParentID(ctx context.Context, id *uuid.UUID) ([]*entity.TreeNode, error)
 	UpdateName(ctx context.Context, id uuid.UUID, name string) error
 	UpdateDescription(ctx context.Context, id uuid.UUID, description string) error
 	UpdateSize(ctx context.Context, id uuid.UUID, size int64) error
