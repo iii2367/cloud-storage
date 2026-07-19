@@ -1,10 +1,14 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type TreeNodeResponse struct {
-	ID          string             `json:"id"`
-	ParentID 	*string `json:"parent_id,omitempty"`
+	ID          uuid.UUID             `json:"id"`
+	ParentID 	*uuid.UUID 			`json:"parent_id,omitempty"`
 
 	Name        string             `json:"name"`
 	FileType    string             `json:"file_type"`
@@ -14,7 +18,7 @@ type TreeNodeResponse struct {
 	UploadAt    time.Time          `json:"upload_at"`
 	UpdatedAt   time.Time          `json:"updated_at"`
 
-	Children []*TreeNodeResponse `json:"children,omitempty"`
+	Children []*TreeNodeResponse 	`json:"children,omitempty"`
 }
 
 type StorageResponse struct {

@@ -15,7 +15,7 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 		// отримати одну ноду
 		storage.GET("/node/:id", h.GetNode)
 		// створити файл або папку
-		storage.POST("/node", h.CreateNode)
+		*/storage.POST("/node", h.CreateNode)/*
 		// змінити назву/опис
 		storage.PATCH("/node/:id", h.UpdateNode)
 		// видалити файл або папку

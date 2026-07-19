@@ -49,7 +49,7 @@ async function api(url, options = {}) {
 
 async function refresh() {
 
-    const response = await fetch("/auth/refresh", {
+    const response = await fetch("/api/auth/refresh", {
         method: "POST",
         credentials: "include"
     });
@@ -75,7 +75,7 @@ async function refresh() {
 
 async function loadUser() {
 
-    const response = await api("/users/me");
+    const response = await api("/api/users/me");
 
 
     if (!response.ok) {
@@ -101,7 +101,7 @@ async function loadUser() {
 
 async function logout() {
 
-    await fetch("/auth/logout", {
+    await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include"
     });
@@ -114,7 +114,7 @@ async function logout() {
 
 async function deleteAccount() {
 
-    const response = await api("/users/me", {
+    const response = await api("/api/users/me", {
         method: "DELETE"
     });
 

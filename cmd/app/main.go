@@ -5,11 +5,11 @@ import (
 	authService "cloud-storage/internal/auth/service"
 	authHttp "cloud-storage/internal/auth/transport/http"
 
-	/*
+	
 	storageRepoPostgres "cloud-storage/internal/storage/repository/postgres"
 	storageService "cloud-storage/internal/storage/service"
 	storageHttp "cloud-storage/internal/storage/transport/http"
-	*/
+	
 
 	"cloud-storage/internal/config"
 	"cloud-storage/internal/database"
@@ -38,12 +38,12 @@ func main() {
 	authHandler := authHttp.NewHandler(authService)
 	authMiddleware := authHttp.NewMiddleware(jwtManager)
 
-	/*
+	
 	treeNodeRepo := storageRepoPostgres.NewTreeNodeRepository(db)
 	storageService := storageService.NewService(treeNodeRepo, jwtManager)
 	storageHandler := storageHttp.NewHandler(storageService)
 	storageMiddleware := storageHttp.NewMiddleware(jwtManager)
-	*/
+	
 
 	router := gin.Default()
 	
@@ -52,7 +52,7 @@ func main() {
 	router.Static("/js", "./web/static/js")	
 
 	authHttp.RegisterRoutes(router, authHandler, authMiddleware)
-	//storageHttp.RegisterRoutes(router, storageHandler, storageMiddleware)
+	storageHttp.RegisterRoutes(router, storageHandler, storageMiddleware)
 	
 	webHandler := web.NewHandler()
 	web.RegisterRoutes(router, webHandler)
