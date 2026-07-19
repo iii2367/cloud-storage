@@ -165,3 +165,56 @@ document.addEventListener(
     "DOMContentLoaded",
     initStorage
 );
+
+function openFolderModal() {
+
+    document
+        .getElementById("folderModal")
+        .classList
+        .add("show");
+}
+
+function closeFolderModal() {
+
+    document
+        .getElementById("folderModal")
+        .classList
+        .remove("show");
+}
+
+function openUploadModal() {
+
+    document
+        .getElementById("uploadModal")
+        .classList
+        .add("show");
+}
+
+function closeUploadModal() {
+
+    document
+        .getElementById("uploadModal")
+        .classList
+        .remove("show");
+}
+
+const uploadFile =
+    document.getElementById("upload-file");
+
+const filePicker =
+    document.getElementById("filePicker");
+
+uploadFile.addEventListener("change", () => {
+
+    if (uploadFile.files.length === 0) {
+
+        filePicker.textContent =
+            "📄 Select File";
+
+        return;
+    }
+
+    filePicker.textContent =
+        "📄 " + uploadFile.files[0].name;
+
+});

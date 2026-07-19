@@ -17,7 +17,7 @@ func (s *Service) CreateNode(
 	fileType	string,
 	parentID 	*uuid.UUID,
 	userID 		uint,
-) (*dto.TreeNodeResponse, error) {	
+) (*dto.NodeResponse, error) {	
 
 	node := &entity.TreeNode{
 		ID:				uuid.New(),
@@ -35,7 +35,7 @@ func (s *Service) CreateNode(
 		return nil, err
 	}
 
-	return &dto.TreeNodeResponse{
+	return &dto.NodeResponse{
 		ID: 			node.ID,
 		ParentID: 		node.ParentID,
 		Name:			node.Name,
@@ -45,6 +45,5 @@ func (s *Service) CreateNode(
 		Size:			node.Size,
 		UploadAt: 		time.Now(),
 		UpdatedAt:		time.Now(),
-		Children: 		nil,
 	}, nil
 }
