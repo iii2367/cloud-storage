@@ -10,7 +10,7 @@ async function parseJSON(response) {
 }
 
 async function signup() {
-    const response = await fetch("/auth/signup", {
+    const response = await fetch("/api/auth/signup", {
         method:"POST",
         headers: {
             "Content-Type":"application/json"
@@ -46,7 +46,7 @@ async function login() {
 
 
 async function loginUser(email,password) {
-    const response = await fetch("/auth/login", {
+    const response = await fetch("/api/auth/login", {
         method:"POST",
         credentials:"include",
         headers: {

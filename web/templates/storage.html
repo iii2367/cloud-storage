@@ -8,7 +8,6 @@
         <link rel="stylesheet" href="/css/storage.css">
         <link rel="stylesheet" href="/css/main.css">
 
-        <script src="/js/storage.js"></script>
     </head>
     <body>
         <header class="topbar">
@@ -58,9 +57,9 @@
             
             <div class="toolbar">
 
-                <button>+ Folder</button>
+                <button onclick="openFolderModal()">+ Folder</button>
     
-                <button>+ Upload</button>
+                <button onclick="openUploadModal()">+ Upload</button>
 
                 <button>Back</button>
 
@@ -93,5 +92,66 @@
 
             </div>
         </div>
+
+        <div class="modal" id="folderModal">
+
+            <div class="modal-window">
+
+                <h3>Create Folder</h3>
+
+                <input
+                    id="folder-name"
+                    type="text"
+                    placeholder="Name"
+                >
+
+                <textarea
+                    id="folder-description"
+                    placeholder="Description"
+                ></textarea>
+
+                <div class="buttons">
+                    <button>Create</button>
+                    <button onclick="closeFolderModal()">Close</button>
+                </div> 
+            </div>
+        </div>
+        <div class="modal" id="uploadModal">
+
+            <div class="modal-window">
+
+                <h3>Upload File</h3>
+
+                 <input
+                    id="file-name"
+                    type="text"
+                    placeholder="Name"
+                >
+
+                <textarea
+                    id="upload-description"
+                    placeholder="Description"
+                ></textarea>
+
+                <input
+                     id="upload-file"
+                    type="file"
+                    hidden
+                >
+                <label
+                    id="filePicker"
+                    for="upload-file"
+                    class="file-picker"
+                >
+                    📄 Select File
+                </label> 
+
+                <div class="buttons">
+                    <button>Save</button>
+                    <button onclick="closeUploadModal()">Close</button>
+                </div> 
+            </div>
+        </div>
+        <script src="/js/storage.js"></script>
     </body>
 </html>

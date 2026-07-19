@@ -1,13 +1,21 @@
 package main
 
 import (
-	"cloud-storage/internal/auth/repository/postgres"
-	"cloud-storage/internal/auth/service"
+	authRepoPostgres "cloud-storage/internal/auth/repository/postgres"
+	authService "cloud-storage/internal/auth/service"
 	authHttp "cloud-storage/internal/auth/transport/http"
+
+	
+	storageRepoPostgres "cloud-storage/internal/storage/repository/postgres"
+	storageService "cloud-storage/internal/storage/service"
+	storageHttp "cloud-storage/internal/storage/transport/http"
+	
+
 	"cloud-storage/internal/config"
 	"cloud-storage/internal/database"
 	"cloud-storage/internal/jwt"
 	"cloud-storage/internal/web"
+
 	"fmt"
 	"log"
 
@@ -22,14 +30,20 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-
-	userRepo := postgres.NewUserRepository(db)
-	sessionRepo := postgres.NewSessionRepository(db)
 	jwtManager := jwt.New(cfg.JWT)
-	service := service.NewService(userRepo, sessionRepo, jwtManager)
 
-	handler := authHttp.NewHandler(service)
-	middleware := authHttp.NewMiddleware(jwtManager)
+	userRepo := authRepoPostgres.NewUserRepository(db)
+	sessionRepo := authRepoPostgres.NewSessionRepository(db)
+	authService := authService.NewService(userRepo, sessionRepo, jwtManager)
+	authHandler := authHttp.NewHandler(authService)
+	authMiddleware := authHttp.NewMiddleware(jwtManager)
+
+	
+	treeNodeRepo := storageRepoPostgres.NewTreeNodeRepository(db)
+	storageService := storageService.NewService(treeNodeRepo, jwtManager)
+	storageHandler := storageHttp.NewHandler(storageService)
+	storageMiddleware := storageHttp.NewMiddleware(jwtManager)
+	
 
 	router := gin.Default()
 	
@@ -37,7 +51,8 @@ func main() {
 	router.Static("/css", "./web/static/css")	
 	router.Static("/js", "./web/static/js")	
 
-	authHttp.RegisterRoutes(router, handler, middleware)
+	authHttp.RegisterRoutes(router, authHandler, authMiddleware)
+	storageHttp.RegisterRoutes(router, storageHandler, storageMiddleware)
 	
 	webHandler := web.NewHandler()
 	web.RegisterRoutes(router, webHandler)
