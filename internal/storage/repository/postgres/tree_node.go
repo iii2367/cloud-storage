@@ -27,8 +27,8 @@ func NewTreeNodeRepository(db *pgxpool.Pool) *TreeNodeRepository {
 
 func (r *TreeNodeRepository) Create(ctx context.Context, node *entity.TreeNode) error {
 	query := `
-		INSERT INTO tree_nodes (id, parent_id, user_id, file_type, mime_type, name, description, size)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+		INSERT INTO tree_nodes (id, parent_id, user_id, file_type, extension, mime_type, name, description, size)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 	`
 	_, err := r.db.Exec(
 		ctx,
@@ -37,6 +37,7 @@ func (r *TreeNodeRepository) Create(ctx context.Context, node *entity.TreeNode) 
 		node.ParentID,
 		node.UserID,
 		node.FileType,
+		node.Extension,
 		node.MimeType,
 		node.Name,
 		node.Description,
@@ -51,7 +52,7 @@ func (r *TreeNodeRepository) Create(ctx context.Context, node *entity.TreeNode) 
 func (r *TreeNodeRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.TreeNode, error) {
 	query := `
 		SELECT 
-			id, parent_id, user_id, file_type, mime_type,
+			id, parent_id, user_id, file_type, extension, mime_type,
 			upload_at, updated_at, name, description, size
 		FROM tree_nodes
 		WHERE id = $1
@@ -67,6 +68,7 @@ func (r *TreeNodeRepository) FindByID(ctx context.Context, id uuid.UUID) (*entit
 		&node.ParentID,
 		&node.UserID,
 		&node.FileType,
+		&node.Extension,
 		&node.MimeType,
 		&node.UploadAt,
 		&node.UpdatedAt,
@@ -84,7 +86,7 @@ func (r *TreeNodeRepository) FindByID(ctx context.Context, id uuid.UUID) (*entit
 func (r *TreeNodeRepository) FindByUserID(ctx context.Context, id uint) ([]*entity.TreeNode, error) {
 	query := `
 		SELECT 
-			id, parent_id, user_id, file_type, mime_type,
+			id, parent_id, user_id, file_type, extension, mime_type,
 			upload_at, updated_at, name, description, size
 		FROM tree_nodes
 		WHERE user_id = $1
@@ -110,6 +112,7 @@ func (r *TreeNodeRepository) FindByUserID(ctx context.Context, id uint) ([]*enti
 			&node.ParentID,
 			&node.UserID,
 			&node.FileType,
+			&node.Extension,
 			&node.MimeType,
 			&node.UploadAt,
 			&node.UpdatedAt,
@@ -138,7 +141,7 @@ func (r *TreeNodeRepository) FindByParentID(ctx context.Context, id *uuid.UUID) 
 	if id == nil {
 		query = `
 			SELECT
-				id, parent_id, user_id, file_type, mime_type,
+				id, parent_id, user_id, file_type, extension, mime_type,
 				upload_at, updated_at, name, description, size
 			FROM tree_nodes
 			WHERE parent_id IS NULL
@@ -149,7 +152,7 @@ func (r *TreeNodeRepository) FindByParentID(ctx context.Context, id *uuid.UUID) 
 	} else {
 		query = `
 			SELECT
-				id, parent_id, user_id, file_type, mime_type,
+				id, parent_id, user_id, file_type, extension, mime_type,
 				upload_at, updated_at, name, description, size
 			FROM tree_nodes
 			WHERE parent_id = $1
@@ -173,6 +176,7 @@ func (r *TreeNodeRepository) FindByParentID(ctx context.Context, id *uuid.UUID) 
 			&node.ParentID,
 			&node.UserID,
 			&node.FileType,
+			&node.Extension,
 			&node.MimeType,
 			&node.UploadAt,
 			&node.UpdatedAt,
@@ -195,7 +199,7 @@ func (r *TreeNodeRepository) FindByParentID(ctx context.Context, id *uuid.UUID) 
 func (r *TreeNodeRepository) UpdateName(ctx context.Context, id uuid.UUID, name string) error {
 	query := `
         UPDATE tree_nodes
-        SET name = $2 updated_at = now()
+        SET name = $2, updated_at = now()
         WHERE id = $1
     `
 	result, err := r.db.Exec(
@@ -219,7 +223,7 @@ func (r *TreeNodeRepository) UpdateName(ctx context.Context, id uuid.UUID, name 
 func (r *TreeNodeRepository) UpdateDescription(ctx context.Context, id uuid.UUID, description string) error {
 	query := `
         UPDATE tree_nodes
-        SET description = $2 updated_at = now()
+        SET description = $2, updated_at = now()
         WHERE id = $1
     `
 	result, err := r.db.Exec(
@@ -243,7 +247,7 @@ func (r *TreeNodeRepository) UpdateDescription(ctx context.Context, id uuid.UUID
 func (r *TreeNodeRepository) UpdateSize(ctx context.Context, id uuid.UUID, size int64) error {
 	query := `
         UPDATE tree_nodes
-        SET size = $2 updated_at = now()
+        SET size = $2, updated_at = now()
         WHERE id = $1
     `
 	result, err := r.db.Exec(
@@ -262,6 +266,37 @@ func (r *TreeNodeRepository) UpdateSize(ctx context.Context, id uuid.UUID, size 
         return repository.ErrTreeNodeNotFound
     }
     return nil
+}
+
+func (r *TreeNodeRepository) UpdateFileMetadata(ctx context.Context, id uuid.UUID, extension *string, mimeType *string, size int64) error {
+	query := `
+		UPDATE tree_nodes
+		SET 
+			extension = $2,
+			mime_type = $3,
+			size = $4,
+			updated_at = now()
+		WHERE id = $1
+	`
+	result, err := r.db.Exec(
+		ctx,
+		query,
+		id,
+		extension,
+		mimeType,
+		size,
+	)
+	if err != nil {
+		return fmt.Errorf(
+			"%w: update file metadata: %w",
+			repository.ErrRepository,
+			err,
+		)
+	}
+	if result.RowsAffected() == 0 {
+		return repository.ErrTreeNodeNotFound
+	}
+	return nil
 }
 	
 func (r *TreeNodeRepository) Delete(ctx context.Context, id uuid.UUID) error {

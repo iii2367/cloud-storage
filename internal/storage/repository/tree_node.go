@@ -15,6 +15,7 @@ type TreeNodeRepository interface {
 	UpdateName(ctx context.Context, id uuid.UUID, name string) error
 	UpdateDescription(ctx context.Context, id uuid.UUID, description string) error
 	UpdateSize(ctx context.Context, id uuid.UUID, size int64) error
+	UpdateFileMetadata(ctx context.Context, id uuid.UUID, extension *string, mimeType *string, size int64,) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	DeleteByUserID(ctx context.Context, id uint) (int64, error)
 	DeleteByParentID(ctx context.Context, id uuid.UUID) (int64, error)	

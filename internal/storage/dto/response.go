@@ -12,7 +12,8 @@ type NodeResponse struct {
 
 	Name        string      `json:"name"`
 	FileType    string      `json:"file_type"`
-	MimeType    string      `json:"mime_type,omitempty"`
+	Extension   *string      `json:"extension,omitempty"`
+	MimeType    *string      `json:"mime_type,omitempty"`
 	Description string      `json:"description,omitempty"`
 	Size        int64       `json:"size"`
 	UploadAt    time.Time   `json:"upload_at"`

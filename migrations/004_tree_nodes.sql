@@ -4,7 +4,8 @@ CREATE TABLE tree_nodes (
     user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
     file_type   VARCHAR(16) NOT NULL CHECK (file_type IN ('file', 'folder')),
-    mime_type   VARCHAR(255) NOT NULL,
+    extension   VARCHAR(16),
+    mime_type   VARCHAR(255),
 
     upload_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),

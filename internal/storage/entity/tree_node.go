@@ -12,7 +12,8 @@ type TreeNode struct {
 	UserID		uint		
 
 	FileType	string		
-	MimeType 	string
+	Extension	*string
+	MimeType 	*string
 
 	UploadAt	time.Time	
 	UpdatedAt 	time.Time	
