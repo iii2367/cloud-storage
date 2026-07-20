@@ -7,7 +7,8 @@
 
         <link rel="stylesheet" href="/css/storage.css">
         <link rel="stylesheet" href="/css/main.css">
-
+    
+         <script src="/js/storage.js" defer></script>
     </head>
     <body>
         <header class="topbar">
@@ -111,7 +112,7 @@
                 ></textarea>
 
                 <div class="buttons">
-                    <button>Create</button>
+                    <button onclick="createFolder()">Create</button>
                     <button onclick="closeFolderModal()">Close</button>
                 </div> 
             </div>
@@ -147,11 +148,10 @@
                 </label> 
 
                 <div class="buttons">
-                    <button>Save</button>
+                    <button onclick="uploadFile()">Save</button>
                     <button onclick="closeUploadModal()">Close</button>
                 </div> 
             </div>
-        </div>
-        <script src="/js/storage.js"></script>
-    </body>
+        </div> 
+    </body> 
 </html>
