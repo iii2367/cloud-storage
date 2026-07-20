@@ -445,3 +445,9 @@ button.danger:active {
     word-break: break-word;
 
 }
+
+.info strong {
+    display:block;
+    word-break:break-word;
+    max-width:100%;
+}

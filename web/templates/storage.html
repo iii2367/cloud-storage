@@ -153,5 +153,62 @@
                 </div> 
             </div>
         </div> 
+        <div class="modal" id="nodeInfoModal">
+            <div class="modal-window">
+                <h3 id="node-info-title">
+                    Node Info
+                </h3>
+                <div class="info">
+                    <span>Name</span>
+                    <strong id="node-info-name"></strong>
+                </div>
+                <div class="info">
+                    <span>Type</span>
+                    <strong id="node-info-type"></strong>
+                </div>
+                <div class="info">
+                    <span>Description</span>
+                    <strong id="node-info-description"></strong>
+                </div>
+                <div class="info">
+                    <span>Size</span>
+                    <strong id="node-info-size"></strong>
+                </div>
+                <div class="info">
+                    <span>MIME</span>
+                    <strong id="node-info-mime"></strong>
+                </div>
+                <div class="info">
+                    <span>Extension</span>
+                    <strong id="node-info-extension"></strong>
+                </div>
+                <div class="info">
+                    <span>Created</span>
+                    <strong id="node-info-created"></strong>
+                </div>
+                <div class="buttons">
+                   <!-- <button onclick="closeNodeInfoModal()">
+                        Close
+</button> -->
+                    <button 
+        id="node-download-btn"
+        onclick="downloadSelectedNode()">
+        Download
+    </button>
+
+
+    <button 
+        class="danger"
+        onclick="deleteSelectedNode()">
+        Delete
+    </button>
+
+
+    <button onclick="closeNodeInfoModal()">
+        Close
+    </button>
+                </div>
+            </div>
+        </div>
     </body> 
 </html>

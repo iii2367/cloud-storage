@@ -248,8 +248,8 @@ const tmpTree = {
             parent_id:      "f4d79f61-bd4d-4c6c-ae72-6d0d0b2d8a01",
             name:           "Music",
             file_type:      "file",
-            extension:      "audio/wav",
-            mime_type:      ".wav",
+            extension:      ".wav",
+            mime_type:      "audio/wav",
             description:    "audio",
             size:           322,
             upload_at:      "2026-07-3T08:30:00Z",
@@ -259,6 +259,7 @@ const tmpTree = {
 }
 
 let tree = tmpTree;
+let selectedNode = null;
 
 /*   RENDER TREE   */
 /* FRONT ITEM DATA */
@@ -274,16 +275,60 @@ function renderTree() {
     tree.children.forEach(node => {
         const item = document.createElement("div");
 
-        const isFolder = node.file_type === "folder";
+    const isFolder = node.file_type === "folder";
 
-        item.className = `item ${isFolder ? "folder" : "file"}`;
+    item.className =
+        `item ${isFolder ? "folder" : "file"}`;
 
-        item.innerHTML = `
-            ${isFolder ? "📁" : "📄"}
-            <span>${node.name}</span>
-        `;
 
-        files.appendChild(item);
+    item.innerHTML = `
+        ${isFolder ? "📁" : "📄"}
+        <span>${node.name}</span>
+    `;
+
+
+    item.addEventListener("contextmenu", (e)=>{
+        e.preventDefault();
+        openNodeInfoModal(node);
+    });
+
+    item.addEventListener("click", ()=>{
+        if(node.file_type === "folder"){
+            openFolder(node);
+        } else {
+            downloadFile(node);
+        }
+    });
+
+
+
+    // довге натискання телефон
+    let pressTimer;
+
+
+    item.addEventListener(
+        "touchstart",
+        ()=>{
+
+            pressTimer = setTimeout(()=>{
+
+                openNodeInfoModal(node);
+
+            },600);
+
+        }
+    );
+
+
+    item.addEventListener(
+        "touchend",
+        ()=>{
+
+            clearTimeout(pressTimer);
+
+        }
+    );
+    files.appendChild(item);        
     });
 }
 
@@ -351,7 +396,7 @@ function uploadFile() {
         selectedFile.name.lastIndexOf(".")
     ).toLowerCase();
   
-    name = name.replace(/\.[^/.]+$/, "");
+    //name = name.replace(/\.[^/.]+$/, "");
 
     //const finalName = name + extension;
 
@@ -380,94 +425,122 @@ function uploadFile() {
     render();
     closeUploadModal();
 }
-/*
+
+function openFolder(node){
+
+    console.log("Open folder:", node.name);
+
+    // тут потім буде:
+    // GET /api/storage/tree/{id}
+
+}
+
+function downloadFile(node){
+
+    console.log("Download:", node.name);
+
+    // потім:
+    // window.location.href =
+    // "/api/storage/download/" + node.id;
+
+}
+
+function openNodeInfoModal(node) {
+
+ selectedNode = node;
+    const downloadBtn = document.getElementById("node-download-btn");
+
+    
+    if(node.file_type === "folder"){
+
+        downloadBtn.style.display="none";
+
+    }
+    else{
+        downloadBtn.style.display="block";
+    
+    }
+
+    document.getElementById("node-info-title").textContent =
+        node.file_type === "folder"
+            ? "📁 Folder Info"
+            : "📄 File Info";
 
 
-function findFolder(treeNode, id) {
+    document.getElementById("node-info-name").textContent =
+        node.name;
 
-    if (treeNode.node.id === id)
-        return treeNode;
 
-    if (!treeNode.folders)
-        return null;
+    document.getElementById("node-info-type").textContent =
+        node.file_type;
 
-    for (const folder of treeNode.folders) {
 
-        const found =
-            findFolder(folder, id);
+    document.getElementById("node-info-description").textContent =
+        node.description || "-";
 
-        if (found)
-            return found;
+
+    document.getElementById("node-info-size").textContent =
+        node.size + " bytes";
+
+
+    document.getElementById("node-info-mime").textContent =
+        node.mime_type || "-";
+
+
+    document.getElementById("node-info-extension").textContent =
+        node.extension || "-";
+
+
+    document.getElementById("node-info-created").textContent =
+        new Date(node.upload_at)
+            .toLocaleString();
+
+
+    document
+        .getElementById("nodeInfoModal")
+        .classList
+        .add("show");
+}
+
+function downloadSelectedNode(){
+
+    if(!selectedNode)
+        return;
+
+
+    downloadFile(selectedNode);
+
+}
+
+function deleteSelectedNode(){
+
+    if(!selectedNode)
+        return;
+
+
+    const index = tree.children.findIndex(
+        n => n.id === selectedNode.id
+    );
+
+
+    if(index !== -1){
+
+        tree.children.splice(index,1);
 
     }
 
-    return null;
 
-}
-
-function openFolder(folder) {
-
-    path.push(folder);
-
-    currentFolder = folder;
+    closeNodeInfoModal();
 
     render();
 
 }
 
-function goBack() {
+function closeNodeInfoModal() {
 
-    if (path.length === 1)
-        return;
-
-    path.pop();
-
-    currentFolder =
-        path[path.length - 1];
-
-    currentFolder = tree;
-    render();
-
+    document
+        .getElementById("nodeInfoModal")
+        .classList
+        .remove("show");
+    selectedNode = null;
 }
-function uploadFile() {
-
-    const input =
-        document.getElementById("upload-file");
-
-    if (input.files.length === 0)
-        return;
-
-    const file =
-        input.files[0];
-
-    currentFolder.files.push({
-
-        id: crypto.randomUUID(),
-
-        parent_id: currentFolder.node.id,
-
-        name: file.name,
-
-        file_type: "file",
-
-        mime_type: "",
-
-        description: "",
-
-        size: file.size
-
-    });
-
-    render();
-
-    closeUploadModal();
-
-}
-
-function render() {
-
-    renderFiles();
-
-    renderPath();
-
-}*/
