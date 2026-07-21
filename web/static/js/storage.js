@@ -219,7 +219,7 @@ uploadInput.addEventListener("change", () => {
 
 const tmpTree = {
     node: {
-        id:             "f4d79f61-bd4d-4c6c-ae72-6d0d0b2d8a01",
+        id:             null,
         parent_id:      null,
         name:           "root",
         file_type:      "folder",
@@ -340,11 +340,12 @@ function render() {
 /* CREATE ITEM */
 /*  SETUP ITEM */
 
-function createFolder() {
+async function createFolder() {
     const nameInput = document.getElementById("folder-name");
     const descriptionInput = document.getElementById("folder-description");
 
     const name = nameInput.value.trim();
+
     if (!name) {
         alert("Enter folder name");
         return;
@@ -352,21 +353,31 @@ function createFolder() {
 
     const description = descriptionInput.value.trim();
 
-    const now = new Date().toISOString();
-
-    tree.children.push({
-        id: crypto.randomUUID(),
-        parent_id: tree.node.id,
+    const request = {
         name: name,
-        file_type: "folder",
-        extension: null,
-        mime_type: null,
         description: description,
-        size: 0,
-        upload_at: now,
-        updated_at: now
+        parent_id: tree.node.id
+    };
+
+    const response = await api("/api/storage/folders", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(request)
     });
-    
+
+    if (!response.ok) {
+        const error = await response.text();
+        console.error(error);
+        alert("Failed to create folder");
+        return;
+    }
+
+    const node = await response.json();
+
+    tree.children.push(node);
+
     nameInput.value = "";
     descriptionInput.value = "";
 

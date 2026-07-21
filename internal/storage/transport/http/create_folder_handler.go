@@ -7,22 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) CreateNode(c *gin.Context) {
+func (h *Handler) CreateFolder(c *gin.Context) {
 	
 	userID 		:= c.MustGet("userID").(uint)
 
-	var req dto.CreateNodeRequest
+	var req dto.CreateFolderRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	node, err := h.service.CreateNode(
+	node, err := h.service.CreateFolder(
 		c.Request.Context(),
 		req.Name,
-		req.Description,
-		req.FileType,
+		req.Description,	
 		req.ParentID,
 		userID,
 	)
