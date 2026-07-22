@@ -27,7 +27,7 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 
 		// видалення
 //		storage.DELETE("/nodes", h.DeleteNodes)		// видаля всі ноди користувача
-//		storage.DELETE("/nodes/:id", h.DeleteNode) // видаля конкретну ноду та її наслідників якщо файл
+		storage.DELETE("/nodes/:id", h.DeleteNode) // видаля конкретну ноду та її наслідників якщо файл
 
 		// скачування
 //		storage.GET("/files/:id/download", h.DownloadFile) // повертає файл для завантаження

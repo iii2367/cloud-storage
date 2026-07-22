@@ -589,10 +589,30 @@ function downloadSelectedNode(){
 
 }
 
-function deleteSelectedNode(){
+async function deleteSelectedNode() {
 
     if(!selectedNode)
         return;
+
+
+    const response = await api(
+        "/api/storage/nodes/" + selectedNode.id,
+        {
+            method: "DELETE"
+        }
+    );
+
+
+    if (!response.ok) {
+
+        const error = await response.text();
+
+        console.error(error);
+
+        alert("Failed to delete node");
+
+        return;
+    }
 
 
     const index = tree.children.findIndex(
@@ -602,7 +622,7 @@ function deleteSelectedNode(){
 
     if(index !== -1){
 
-        tree.children.splice(index,1);
+        tree.children.splice(index, 1);
 
     }
 
@@ -610,7 +630,6 @@ function deleteSelectedNode(){
     closeNodeInfoModal();
 
     render();
-
 }
 
 function closeNodeInfoModal() {
