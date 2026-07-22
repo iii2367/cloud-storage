@@ -30,6 +30,6 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 		storage.DELETE("/nodes/:id", h.DeleteNode) // видаля конкретну ноду та її наслідників якщо файл
 
 		// скачування
-//		storage.GET("/files/:id/download", h.DownloadFile) // повертає файл для завантаження
+		storage.GET("/files/:id/download", h.DownloadFile) // повертає файл для завантаження
 	}
 }

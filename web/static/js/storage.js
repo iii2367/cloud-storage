@@ -530,14 +530,41 @@ async function goBack() {
     render();
 }
 
-function downloadFile(node){
+async function downloadFile(node){
 
-    console.log("Download:", node.name);
+    const response = await api(
+        "/api/storage/files/" 
+        + node.id 
+        + "/download"
+    );
+    if(!response.ok){
 
-    // потім:
-    // window.location.href =
-    // "/api/storage/download/" + node.id;
+        const error =
+            await response.text();
 
+        console.error(error);
+
+        alert("Download failed");
+
+        return;
+    }
+    const blob =
+        await response.blob();
+    const url =
+        window.URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+    a.href = url;
+    let filename = node.name;
+    if(node.extension){
+        filename += node.extension;
+    }
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
 }
 
 function openNodeInfoModal(node) {
