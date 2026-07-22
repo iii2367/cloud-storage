@@ -12,10 +12,24 @@ func (s *Service) DeleteFile(
 	userID uint,
 ) (error) {
 
-	// видалення фізичного файлу 
+	node, err := s.treeNodeRepo.FindByID(
+		ctx,
+		nodeID,
+		userID,
+	)
+	if err != nil {
+		return err
+	} 
 
+	err = s.deletePhysicalFile(
+		node.ID,
+	)
+	if err != nil {
 
-	err := s.treeNodeRepo.Delete(ctx, nodeID, userID)
+		return err
+	}
+
+	err = s.treeNodeRepo.Delete(ctx, nodeID, userID)
 	if err != nil {
 		return err
 	}
