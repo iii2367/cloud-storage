@@ -218,47 +218,6 @@ uploadInput.addEventListener("change", () => {
 /*  TREE DATA   */
 /* REQUEST TREE */
 
-const tmpTree = {
-    node: {
-        id:             null,
-        parent_id:      null,
-        name:           "root",
-        file_type:      "folder",
-        mime_type:      null,
-        description:    "root dir",
-        size:           0,
-        upload_at:      "2026-07-18T08:30:00Z",
-        updated_at:     "2026-07-19T012:30:00Z"
-    },
-    
-    children: [
-        {
-            id:             "f4d79f61-bd4d-4c6c-ae72-6d0d0b2d8a02",
-            parent_id:      "f4d79f61-bd4d-4c6c-ae72-6d0d0b2d8a01",
-            name:           "Doc",
-            file_type:      "folder",
-            extension:      null,
-            mime_type:      null,
-            description:    "documents",
-            size:           0,
-            upload_at:      "2026-07-2T08:30:00Z",
-            updated_at:     "2026-07-12T012:30:00Z"
-        },
-        {
-            id:             "f4d79f61-bd4d-4c6c-ae72-6d0d0b2d8a03",
-            parent_id:      "f4d79f61-bd4d-4c6c-ae72-6d0d0b2d8a01",
-            name:           "Music",
-            file_type:      "file",
-            extension:      ".wav",
-            mime_type:      "audio/wav",
-            description:    "audio",
-            size:           322,
-            upload_at:      "2026-07-3T08:30:00Z",
-            updated_at:     "2026-07-12T012:30:00Z"
-        },
-    ]
-}
-
 let tree = null;
 let navigation = [];
 let selectedNode = null;
@@ -413,55 +372,114 @@ async function createFolder() {
     closeFolderModal();
 }
 
-function uploadFile() {
-    const nameInput = document.getElementById("file-name");
-    const descriptionInput = document.getElementById("upload-description");
+async function uploadFile() {
 
-    let name = nameInput.value.trim();
 
-    if (!name) {
+    const nameInput =
+        document.getElementById("file-name");
+
+
+    const descriptionInput =
+        document.getElementById("upload-description");
+
+
+    const name =
+        nameInput.value.trim();
+
+
+
+    if(!name){
         alert("Enter file name");
         return;
     }
 
-    if (!selectedFile) {
+
+    if(!selectedFile){
         alert("Select file");
         return;
-    } 
+    }
 
-    const description = descriptionInput.value.trim();
 
-    const extension = selectedFile.name.substring(
-        selectedFile.name.lastIndexOf(".")
-    ).toLowerCase();
-  
-    //name = name.replace(/\.[^/.]+$/, "");
 
-    //const finalName = name + extension;
+    const form = new FormData();
 
-    const now = new Date().toISOString();
 
-    tree.children.push({
-        id: crypto.randomUUID(),
-        parent_id: tree.node.id,
-        name: name,
-        file_type: "file",
-        extension: extension,
-        mime_type: selectedFile.type,
-        description: description,
-        size: selectedFile.size,
-        upload_at: now,
-        updated_at: now
-    });
+    form.append(
+        "file",
+        selectedFile
+    );
 
-    nameInput.value = "";
-    descriptionInput.value = "";
 
-    selectedFile = null;
-    document.getElementById("upload-file").value = "";
-    document.getElementById("filePicker").textContent = "📄 Select File";
+    form.append(
+        "name",
+        name
+    );
+
+
+    form.append(
+        "description",
+        descriptionInput.value.trim()
+    );
+
+
+    form.append(
+        "parent_id",
+        tree.node.id
+    );
+
+
+
+    const response = await api(
+        "/api/storage/files",
+        {
+            method:"POST",
+            body:form
+        }
+    );
+
+
+
+    if(!response.ok){
+
+        const error =
+            await response.text();
+
+        console.error(error);
+
+        alert("Upload failed");
+
+        return;
+    }
+
+
+
+    const node =
+        await response.json();
+
+
+
+    tree.children.push(node);
+
+
+
+    nameInput.value="";
+    descriptionInput.value="";
+
+    selectedFile=null;
+
+    document.getElementById(
+        "upload-file"
+    ).value="";
+
+
+    document.getElementById(
+        "filePicker"
+    ).textContent="📄 Select File";
+
+
 
     render();
+
     closeUploadModal();
 }
 

@@ -8,6 +8,12 @@ type CreateFolderRequest struct {
 	ParentID    *uuid.UUID `json:"parent_id"`
 }
 
+type UploadFileRequest struct { 
+	Name string 			`form:"name" binding:"required"`
+	Description string 		`form:"description"`
+	ParentID *uuid.UUID 	`form:"parent_id"`
+}
+
 type UpdateNodeRequest struct {
 	Name 		*string `json:"name"`
 	Description *string `json:"description"`

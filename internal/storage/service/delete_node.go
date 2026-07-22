@@ -12,8 +12,16 @@ func (s *Service) DeleteNode(
 	userID uint,
 ) (error) {
 
-	err := s.treeNodeRepo.Delete(ctx, nodeID, userID)
+	node, err := s.treeNodeRepo.FindByID(ctx, nodeID, userID)
 	if err != nil {
+		return err
+	}
+
+	if node.FileType == "folder" {
+		err = s.DeleteFolder(ctx, nodeID, userID)
+		return err
+	} else if node.FileType == "file" {
+		err = s.DeleteFile(ctx, nodeID, userID)
 		return err
 	}
 

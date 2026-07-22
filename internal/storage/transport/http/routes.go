@@ -20,7 +20,7 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 		storage.POST("/root", h.CreateRoot)		// створює початкову папку користувача
 
 		// файли
-//		storage.POST("/files", h.UploadFile) // створює ноду файла та закріплює за нею файл
+		storage.POST("/files", h.UploadFile) // створює ноду файла та закріплює за нею файл
 
 		// зміна
 //		storage.PATCH("/nodes/:id", h.UpdateNode) // оновлює дані доди які надасть користувач
