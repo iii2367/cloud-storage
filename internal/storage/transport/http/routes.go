@@ -10,7 +10,7 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 	{
 		// дерево
 		storage.GET("/tree", h.GetRootTree) 	// дає наслідників корня
-//		storage.GET("/tree/:id", h.GetTree) // дає наслідників відносно id папки
+		storage.GET("/tree/:id", h.GetTree) // дає наслідників відносно id папки
 
 		// одна нода
 //		storage.GET("/nodes/:id", h.GetNode) // дає ноду за id

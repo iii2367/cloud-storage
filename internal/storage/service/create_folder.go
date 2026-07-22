@@ -27,5 +27,5 @@ func (s *Service) CreateFolder(
 		return nil, err
 	}
 
-	return nodeToResponse(node), nil
+	return toNodeResponse(node), nil
 }

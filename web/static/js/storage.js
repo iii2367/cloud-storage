@@ -157,7 +157,7 @@ async function initStorage() {
 
 
     await loadUser();
-    await loadTree();
+    await loadRootTree();
     render();
 }
 
@@ -260,9 +260,10 @@ const tmpTree = {
 }
 
 let tree = null;
+let navigation = [];
 let selectedNode = null;
 
-async function loadTree() {
+async function loadRootTree() {
 
     const response = await api("/api/storage/tree");
 
@@ -274,13 +275,19 @@ async function loadTree() {
     }
 
     tree = await response.json();
+    navigation = [tree.node]; 
 }
 
 /*   RENDER TREE   */
 /* FRONT ITEM DATA */
 
 function renderPath() {
-    document.querySelector(".path").textContent = "Path: " + tree.node.name + "/";
+    const path = navigation
+        .map(node => node.name)
+        .join("/");
+
+    document.querySelector(".path").textContent =
+        "Path: " + path + "/";
 }
 
 function renderTree() {
@@ -397,6 +404,7 @@ async function createFolder() {
     const node = await response.json();
 
     tree.children.push(node);
+//await openFolder(node);
 
     nameInput.value = "";
     descriptionInput.value = "";
@@ -457,13 +465,51 @@ function uploadFile() {
     closeUploadModal();
 }
 
-function openFolder(node){
+async function openFolder(node){
+    
+    const response = await api(
+        "/api/storage/tree/" + node.id
+    );
 
-    console.log("Open folder:", node.name);
+    if (!response.ok) {
+        alert("Failed to open folder");
+        return;
+    }
 
-    // тут потім буде:
-    // GET /api/storage/tree/{id}
+    tree = await response.json();
 
+    navigation.push(tree.node);
+
+    render();
+}
+
+async function goBack() {
+
+    if (navigation.length <= 1) {
+        return;
+    }
+
+    navigation.pop();
+
+    const parent = navigation[navigation.length - 1];
+
+    if (parent.parent_id === null) {
+        await loadRootTree();
+    } else {
+
+        const response = await api(
+            "/api/storage/tree/" + parent.id
+        );
+
+        if (!response.ok) {
+            alert("Failed to load folder");
+            return;
+        }
+
+        tree = await response.json();
+    }
+
+    render();
 }
 
 function downloadFile(node){
