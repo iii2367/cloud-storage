@@ -9,6 +9,23 @@ async function parseJSON(response) {
 
 }
 
+async function createRootFolder() {
+    const response = await fetch("/api/storage/root", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Authorization":
+                "Bearer " + sessionStorage.getItem("access_token")
+        }
+    });
+    if (!response.ok) {
+        const data = await parseJSON(response);
+        console.error(data);
+        return false;
+    }
+    return true;
+}
+
 async function signup() {
     const response = await fetch("/api/auth/signup", {
         method:"POST",
@@ -30,17 +47,35 @@ async function signup() {
         alert(data.error || "Signup error");
         return;
     }
-    await loginUser(
+    const logged = await loginUser(
         document.getElementById("signup-email").value,
         document.getElementById("signup-password").value
     );
+    
+    if (!logged) {
+        return;
+    }
+
+    const folroot = await createRootFolder();
+
+    if (!folroot) {
+        return;
+    }
+
+    window.location.href="/storage";
 }
 
 async function login() {
-    await loginUser(
+    const logged = await loginUser(
         document.getElementById("login-email").value,
         document.getElementById("login-password").value
     );
+
+    if (!logged) {
+        return;
+    }
+
+    window.location.href="/storage";
 }
 
 
@@ -60,11 +95,12 @@ async function loginUser(email,password) {
     const data = await parseJSON(response);
     if (!response.ok) {
         alert(data.error || "Login failed");
-        return;
+        return false;
     }
     sessionStorage.setItem(
         "access_token",
         data.access_token
     );
-    window.location.href="/storage";
+    return true;
+    //window.location.href="/storage";
 }

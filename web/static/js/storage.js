@@ -157,6 +157,7 @@ async function initStorage() {
 
 
     await loadUser();
+    await loadTree();
     render();
 }
 
@@ -258,8 +259,22 @@ const tmpTree = {
     ]
 }
 
-let tree = tmpTree;
+let tree = null;
 let selectedNode = null;
+
+async function loadTree() {
+
+    const response = await api("/api/storage/tree");
+
+    if (!response.ok) {
+        const error = await response.text();
+        console.error(error);
+        alert("Failed to load storage tree");
+        return;
+    }
+
+    tree = await response.json();
+}
 
 /*   RENDER TREE   */
 /* FRONT ITEM DATA */
@@ -333,6 +348,11 @@ function renderTree() {
 }
 
 function render() {
+
+    if (!tree) {
+        return;
+    }
+
     renderPath();
     renderTree();
 }
