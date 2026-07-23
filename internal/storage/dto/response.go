@@ -7,20 +7,20 @@ import (
 )
 
 type NodeResponse struct {
-	ID          uuid.UUID   `json:"id"`
-	ParentID 	*uuid.UUID 	`json:"parent_id,omitempty"`
+	ID       uuid.UUID  `json:"id"`
+	ParentID *uuid.UUID `json:"parent_id,omitempty"`
 
-	Name        string      `json:"name"`
-	FileType    string      `json:"file_type"`
-	Extension   *string      `json:"extension,omitempty"`
-	MimeType    *string      `json:"mime_type,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Size        int64       `json:"size"`
-	UploadAt    time.Time   `json:"upload_at"`
-	UpdatedAt   time.Time	`json:"updated_at"`
+	Name        string    `json:"name"`
+	FileType    string    `json:"file_type"`
+	Extension   *string   `json:"extension,omitempty"`
+	MimeType    *string   `json:"mime_type,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Size        int64     `json:"size"`
+	UploadAt    time.Time `json:"upload_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type TreeNodeResponse struct {
-	Node		NodeResponse	`json:"node"`
-	Children 	[]*NodeResponse `json:"children"`
+	Node     NodeResponse    `json:"node"`
+	Children []*NodeResponse `json:"children"`
 }

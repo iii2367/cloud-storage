@@ -1,6 +1,6 @@
 package postgres
 
-import (	
+import (
 	"cloud-storage/internal/auth/entity"
 	"cloud-storage/internal/auth/repository"
 	"context"
@@ -12,15 +12,15 @@ import (
 )
 
 type SessionRepository struct {
-    db *pgxpool.Pool
+	db *pgxpool.Pool
 }
 
 var _ repository.SessionRepository = (*SessionRepository)(nil)
 
 func NewSessionRepository(db *pgxpool.Pool) *SessionRepository {
-    return &SessionRepository {
-        db: db,
-    }
+	return &SessionRepository{
+		db: db,
+	}
 }
 
 func (r *SessionRepository) Create(ctx context.Context, session *entity.Session) error {
@@ -43,7 +43,7 @@ func (r *SessionRepository) Create(ctx context.Context, session *entity.Session)
 	}
 	return nil
 }
-	
+
 func (r *SessionRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Session, error) {
 	query := `
 		SELECT 
@@ -70,10 +70,12 @@ func (r *SessionRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity
 		&session.IPAddress,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) { return nil, repository.ErrSessionNotFound }
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrSessionNotFound
+		}
 		return nil, fmt.Errorf("%w: find session by id: %w", repository.ErrRepository, err)
 	}
-	return &session, nil 
+	return &session, nil
 }
 
 func (r *SessionRepository) FindByTokenHash(ctx context.Context, hash string) (*entity.Session, error) {
@@ -102,12 +104,14 @@ func (r *SessionRepository) FindByTokenHash(ctx context.Context, hash string) (*
 		&session.IPAddress,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) { return nil, repository.ErrSessionNotFound }
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrSessionNotFound
+		}
 		return nil, fmt.Errorf("%w: find session by token hash: %w", repository.ErrRepository, err)
 	}
-	return &session, nil 
+	return &session, nil
 }
-	
+
 func (r *SessionRepository) FindByUserID(ctx context.Context, id uint) ([]*entity.Session, error) {
 	query := `
 		SELECT 
@@ -153,29 +157,29 @@ func (r *SessionRepository) FindByUserID(ctx context.Context, id uint) ([]*entit
 	}
 	return sessions, nil
 }
-	
-func (r *SessionRepository) UpdateTokenHash(ctx context.Context, id uuid.UUID, hash string,) error {
-    query := `
+
+func (r *SessionRepository) UpdateTokenHash(ctx context.Context, id uuid.UUID, hash string) error {
+	query := `
         UPDATE sessions
         SET token_hash = $2
         WHERE id = $1
     `
-    result, err := r.db.Exec(
-        ctx,
-        query,
-        id,
-        hash,
-    )
-    if err != nil {
-        return fmt.Errorf("%w: update token hash: %w",
-            repository.ErrRepository,
-            err,
-        )
-    }
-    if result.RowsAffected() == 0 {
-        return repository.ErrSessionNotFound
-    }
-    return nil
+	result, err := r.db.Exec(
+		ctx,
+		query,
+		id,
+		hash,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: update token hash: %w",
+			repository.ErrRepository,
+			err,
+		)
+	}
+	if result.RowsAffected() == 0 {
+		return repository.ErrSessionNotFound
+	}
+	return nil
 }
 
 func (r *SessionRepository) UpdateLastUsedAt(ctx context.Context, id uuid.UUID) error {
@@ -198,7 +202,7 @@ func (r *SessionRepository) UpdateLastUsedAt(ctx context.Context, id uuid.UUID) 
 	}
 	return nil
 }
-	
+
 func (r *SessionRepository) Revoke(ctx context.Context, id uuid.UUID) error {
 	query := `
 		UPDATE sessions
@@ -220,7 +224,7 @@ func (r *SessionRepository) Revoke(ctx context.Context, id uuid.UUID) error {
 	return nil
 
 }
-	
+
 func (r *SessionRepository) RevokeAllByUserID(ctx context.Context, id uint) error {
 	query := `
 		UPDATE sessions
@@ -240,7 +244,7 @@ func (r *SessionRepository) RevokeAllByUserID(ctx context.Context, id uint) erro
 	}
 	return nil
 }
-	
+
 func (r *SessionRepository) DeleteExpired(ctx context.Context) (int64, error) {
 	query := `
 		DELETE FROM sessions
@@ -252,7 +256,7 @@ func (r *SessionRepository) DeleteExpired(ctx context.Context) (int64, error) {
 	)
 
 	if err != nil {
-        return 0, fmt.Errorf("%w: delete expired sessions: %w", repository.ErrRepository, err)
-    }
-    return result.RowsAffected(), nil
+		return 0, fmt.Errorf("%w: delete expired sessions: %w", repository.ErrRepository, err)
+	}
+	return result.RowsAffected(), nil
 }

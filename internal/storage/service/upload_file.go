@@ -35,7 +35,7 @@ func (s *Service) UploadFile(
 		node.ID,
 	)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	extension := filepath.Ext(
@@ -53,7 +53,7 @@ func (s *Service) UploadFile(
 		file.Size,
 	)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	node.Extension = &extension
 	node.MimeType = &mimeType

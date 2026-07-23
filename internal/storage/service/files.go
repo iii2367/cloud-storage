@@ -1,6 +1,5 @@
 package service
 
-
 import (
 	"io"
 	"mime/multipart"
@@ -9,8 +8,6 @@ import (
 
 	"github.com/google/uuid"
 )
-
-
 
 func (s *Service) saveFile(
 	file *multipart.FileHeader,
@@ -28,7 +25,7 @@ func (s *Service) saveFile(
 		return err
 	}
 
-	src,err := file.Open()
+	src, err := file.Open()
 
 	if err != nil {
 		return err
@@ -40,14 +37,14 @@ func (s *Service) saveFile(
 		root,
 		id.String(),
 	)
-	dst,err := os.Create(path)
+	dst, err := os.Create(path)
 
 	if err != nil {
 		return err
 	}
 
 	defer dst.Close()
-	_,err = io.Copy(
+	_, err = io.Copy(
 		dst,
 		src,
 	)

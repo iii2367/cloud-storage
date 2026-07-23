@@ -1,6 +1,6 @@
 package http
 
-import (	
+import (
 	"cloud-storage/internal/storage/dto"
 	"net/http"
 
@@ -36,9 +36,9 @@ func (h *Handler) UploadFile(c *gin.Context) {
 	}
 
 	req := dto.UploadFileRequest{
-		Name: c.PostForm("name"),
+		Name:        c.PostForm("name"),
 		Description: c.PostForm("description"),
-		ParentID: parentID,
+		ParentID:    parentID,
 	}
 
 	if req.Name == "" {
@@ -68,5 +68,5 @@ func (h *Handler) UploadFile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated,node)
+	c.JSON(http.StatusCreated, node)
 }

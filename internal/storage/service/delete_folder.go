@@ -10,7 +10,7 @@ func (s *Service) DeleteFolder(
 	ctx context.Context,
 	nodeID uuid.UUID,
 	userID uint,
-) (error) {
+) error {
 
 	err := s.treeNodeRepo.Delete(ctx, nodeID, userID)
 	if err != nil {

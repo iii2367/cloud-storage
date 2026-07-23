@@ -10,7 +10,7 @@ func (s *Service) DeleteNode(
 	ctx context.Context,
 	nodeID uuid.UUID,
 	userID uint,
-) (error) {
+) error {
 
 	node, err := s.treeNodeRepo.FindByID(ctx, nodeID, userID)
 	if err != nil {

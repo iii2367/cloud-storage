@@ -7,19 +7,19 @@ import (
 )
 
 type TreeNode struct {
-	ID			uuid.UUID	
-	ParentID	*uuid.UUID 	
-	UserID		uint		
+	ID       uuid.UUID
+	ParentID *uuid.UUID
+	UserID   uint
 
-	FileType	string		
-	Extension	*string
-	MimeType 	*string
+	FileType  string
+	Extension *string
+	MimeType  *string
 
-	UploadAt	time.Time	
-	UpdatedAt 	time.Time	
+	UploadAt  time.Time
+	UpdatedAt time.Time
 
-	Name		string		
-	Description	string		
+	Name        string
+	Description string
 
-	Size 		int64 		
+	Size int64
 }

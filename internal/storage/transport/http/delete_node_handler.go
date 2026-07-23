@@ -13,11 +13,11 @@ func (h *Handler) DeleteNode(c *gin.Context) {
 	nodeID, err := uuid.Parse(c.Param("id"))
 
 	if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{
-            "error": "invalid UUID",
-        })
-        return
-    }
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid UUID",
+		})
+		return
+	}
 
 	err = h.service.DeleteNode(
 		c.Request.Context(),

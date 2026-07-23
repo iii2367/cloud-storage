@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"path/filepath"
-	
+
 	"github.com/google/uuid"
 )
 
@@ -32,7 +32,7 @@ func (s *Service) DownloadFile(
 		return "",
 			"",
 			"",
-			ErrNotFile	
+			ErrNotFile
 	}
 
 	path := filepath.Join(

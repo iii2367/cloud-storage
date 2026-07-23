@@ -1,79 +1,79 @@
 package jwt
 
 import (
-    "time"
 	"cloud-storage/internal/config"
-    "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"time"
 )
 
 type Manager struct {
-   	accessSecret  []byte
-    refreshSecret []byte
-    accessTTL  time.Duration
-    refreshTTL time.Duration
-    issuer  			string
+	accessSecret  []byte
+	refreshSecret []byte
+	accessTTL     time.Duration
+	refreshTTL    time.Duration
+	issuer        string
 }
 
 func New(cfg config.JWT) *Manager {
-    return &Manager {
-        accessSecret:  	cfg.AccessSecret,
-		refreshSecret: 	cfg.RefreshSecret,
-        accessTTL:	 	cfg.AccessTTL,
-		refreshTTL: 	cfg.RefreshTTL,
-        issuer:  		cfg.Issuer,
-    }
+	return &Manager{
+		accessSecret:  cfg.AccessSecret,
+		refreshSecret: cfg.RefreshSecret,
+		accessTTL:     cfg.AccessTTL,
+		refreshTTL:    cfg.RefreshTTL,
+		issuer:        cfg.Issuer,
+	}
 }
 
 func (m *Manager) GenerateAccessToken(userID uint, sessionID uuid.UUID) (string, error) {
 	now := time.Now()
 
-    claims := AccessClaims {
-		UserID:		userID, 
-		SessionID:  sessionID,
-        RegisteredClaims: jwt.RegisteredClaims {
-            Issuer:    m.issuer,
-            ExpiresAt: jwt.NewNumericDate(now.Add(m.accessTTL)),
-            IssuedAt:  jwt.NewNumericDate(now),
-        },
-    }
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	claims := AccessClaims{
+		UserID:    userID,
+		SessionID: sessionID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    m.issuer,
+			ExpiresAt: jwt.NewNumericDate(now.Add(m.accessTTL)),
+			IssuedAt:  jwt.NewNumericDate(now),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-    return token.SignedString(m.accessSecret)
+	return token.SignedString(m.accessSecret)
 }
 
 func (m *Manager) ParseAccessToken(tokenString string) (*AccessClaims, error) {
-    claims := &AccessClaims{}
+	claims := &AccessClaims{}
 
-    token, err := jwt.ParseWithClaims(tokenString, claims, func (token *jwt.Token) (any, error) {
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
 		if token.Method != jwt.SigningMethodHS256 {
-        	return nil, ErrInvalidToken
-	    }
-        return m.accessSecret, nil
-    })
+			return nil, ErrInvalidToken
+		}
+		return m.accessSecret, nil
+	})
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    if !token.Valid {
-        return nil, ErrInvalidToken
-    }
+	if !token.Valid {
+		return nil, ErrInvalidToken
+	}
 
-    return claims, nil
+	return claims, nil
 }
 
 func (m *Manager) GenerateRefreshToken(userID uint, sessionID uuid.UUID) (string, *RefreshClaims, error) {
 	now := time.Now()
 
-	claims := RefreshClaims {
-		UserID: userID,
+	claims := RefreshClaims{
+		UserID:    userID,
 		SessionID: sessionID,
-		RegisteredClaims: jwt.RegisteredClaims {
-            Issuer:    m.issuer,
-            ExpiresAt: jwt.NewNumericDate(now.Add(m.refreshTTL)),
-            IssuedAt:  jwt.NewNumericDate(now),
-        },
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    m.issuer,
+			ExpiresAt: jwt.NewNumericDate(now.Add(m.refreshTTL)),
+			IssuedAt:  jwt.NewNumericDate(now),
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(m.refreshSecret)
@@ -81,26 +81,26 @@ func (m *Manager) GenerateRefreshToken(userID uint, sessionID uuid.UUID) (string
 		return "", nil, err
 	}
 
-    return tokenString, &claims, nil
+	return tokenString, &claims, nil
 }
 
 func (m *Manager) ParseRefreshToken(tokenString string) (*RefreshClaims, error) {
-	 claims := &RefreshClaims{}
+	claims := &RefreshClaims{}
 
-    token, err := jwt.ParseWithClaims(tokenString, claims, func (token *jwt.Token) (any, error) {
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
 		if token.Method != jwt.SigningMethodHS256 {
-        	return nil, ErrInvalidToken
-   	 	}
-        return m.refreshSecret, nil
-    })
+			return nil, ErrInvalidToken
+		}
+		return m.refreshSecret, nil
+	})
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    if !token.Valid {
-        return nil, ErrInvalidToken
-    }
+	if !token.Valid {
+		return nil, ErrInvalidToken
+	}
 
-    return claims, nil
+	return claims, nil
 }

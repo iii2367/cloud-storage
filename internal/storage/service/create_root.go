@@ -1,6 +1,8 @@
 package service
 
-import ("context")
+import (
+	"context"
+)
 
 func (s *Service) CreateRoot(
 	ctx context.Context,
@@ -10,7 +12,7 @@ func (s *Service) CreateRoot(
 	root, err := s.treeNodeRepo.FindRoot(ctx, userID)
 
 	if err == nil && root != nil {
-    	return nil
+		return nil
 	}
 	_, err = s.createNode(
 		ctx,

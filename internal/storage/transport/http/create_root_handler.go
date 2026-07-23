@@ -10,7 +10,6 @@ func (h *Handler) CreateRoot(c *gin.Context) {
 
 	userID := c.MustGet("userID").(uint)
 
-
 	err := h.service.CreateRoot(
 		c.Request.Context(),
 		userID,
@@ -22,7 +21,6 @@ func (h *Handler) CreateRoot(c *gin.Context) {
 		})
 		return
 	}
-
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "root created",

@@ -1,9 +1,11 @@
 package service
 
-import ("errors")
+import (
+	"errors"
+)
 
 var (
-	ErrInvalidCredentials 	= errors.New("invalid credentials")
-	ErrInvalidRefreshToken 	= errors.New("invalid refresh token")
-	ErrRefreshTokenReuse	= errors.New("refresh token reuse")
+	ErrInvalidCredentials  = errors.New("invalid credentials")
+	ErrInvalidRefreshToken = errors.New("invalid refresh token")
+	ErrRefreshTokenReuse   = errors.New("refresh token reuse")
 )

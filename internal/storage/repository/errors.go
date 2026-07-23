@@ -1,8 +1,10 @@
 package repository
 
-import ("errors")
+import (
+	"errors"
+)
 
 var (
-	ErrRepository         = errors.New("repository error")
-	ErrTreeNodeNotFound	  = errors.New("tree node not found")
+	ErrRepository       = errors.New("repository error")
+	ErrTreeNodeNotFound = errors.New("tree node not found")
 )

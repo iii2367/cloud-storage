@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func (s *Service) deletePhysicalFile(
 	id uuid.UUID,
 ) error {

@@ -1,21 +1,21 @@
 package config
 
 import (
-	"os"
 	"log"
+	"os"
 )
 
 type Config struct {
-    Database Database
-    Server   Server
-    JWT      JWT
+	Database Database
+	Server   Server
+	JWT      JWT
 }
 
 func MustLoad(prefix string) *Config {
-	return &Config {
-		Server: *MustLoadServer(prefix),
+	return &Config{
+		Server:   *MustLoadServer(prefix),
 		Database: *MustLoadDatabase(prefix),
-		JWT: *MustLoadJWT(prefix),
+		JWT:      *MustLoadJWT(prefix),
 	}
 }
 
