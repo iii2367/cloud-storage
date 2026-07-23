@@ -8,6 +8,8 @@ Cloud Storage is a full-stack file storage application written in Go.
 
 The project focuses on backend architecture, authentication, and hierarchical file storage while providing a minimal web interface for interacting with the system.
 
+## Appearance
+
 <table align="center">
 <tr>
 <td align="center">
