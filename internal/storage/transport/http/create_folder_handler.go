@@ -8,8 +8,8 @@ import (
 )
 
 func (h *Handler) CreateFolder(c *gin.Context) {
-	
-	userID 		:= c.MustGet("userID").(uint)
+
+	userID := c.MustGet("userID").(uint)
 
 	var req dto.CreateFolderRequest
 	err := c.ShouldBindJSON(&req)
@@ -21,7 +21,7 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 	node, err := h.service.CreateFolder(
 		c.Request.Context(),
 		req.Name,
-		req.Description,	
+		req.Description,
 		req.ParentID,
 		userID,
 	)

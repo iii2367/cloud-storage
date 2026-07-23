@@ -8,8 +8,8 @@ import (
 
 func (h *Handler) DeleteMe(c *gin.Context) {
 
-	userID 	:= c.MustGet("userID").(uint)
-	
+	userID := c.MustGet("userID").(uint)
+
 	err := h.service.DeleteMe(
 		c.Request.Context(),
 		userID,
@@ -18,7 +18,7 @@ func (h *Handler) DeleteMe(c *gin.Context) {
 	if err != nil {
 		c.JSON(
 			http.StatusInternalServerError,
-			gin.H{ "error": err.Error() },
+			gin.H{"error": err.Error()},
 		)
 		return
 	}

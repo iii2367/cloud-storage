@@ -9,7 +9,7 @@ import (
 
 func (h *Handler) Signup(c *gin.Context) {
 	var req dto.SignupRequest
-	err := c.ShouldBindJSON(&req);
+	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

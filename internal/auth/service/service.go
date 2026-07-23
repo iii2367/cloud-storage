@@ -7,24 +7,24 @@ import (
 )
 
 type Service struct {
-	userRepo	repository.UserRepository
+	userRepo    repository.UserRepository
 	sessionRepo repository.SessionRepository
 	jwtManager  *jwt.Manager
 }
 
 type LoginMeta struct {
-    UserAgent string
-    IP        net.IP
+	UserAgent string
+	IP        net.IP
 }
 
 func NewService(
-	userRepo 	repository.UserRepository,
+	userRepo repository.UserRepository,
 	sessionRepo repository.SessionRepository,
-	jwtManager 	*jwt.Manager,
+	jwtManager *jwt.Manager,
 ) *Service {
-	return &Service {
-		userRepo: 		userRepo,
-		sessionRepo: 	sessionRepo,
-		jwtManager: 	jwtManager,
+	return &Service{
+		userRepo:    userRepo,
+		sessionRepo: sessionRepo,
+		jwtManager:  jwtManager,
 	}
 }

@@ -1,6 +1,6 @@
 package service
 
-import (	
+import (
 	"cloud-storage/internal/auth/dto"
 	"cloud-storage/internal/auth/entity"
 	"context"
@@ -29,17 +29,17 @@ func (s *Service) Login(ctx context.Context, email, password string, meta LoginM
 	}
 
 	session := &entity.Session{
-		SessionID: 	sid,
-		UserID: 	user.ID,
-		TokenHash: 	HashToken(tokens.RefreshToken),
-		ExpiresAt: 	tokens.RefreshExpiresAt,
-		UserAgent: 	meta.UserAgent,
-		IPAddress:  meta.IP,
+		SessionID: sid,
+		UserID:    user.ID,
+		TokenHash: HashToken(tokens.RefreshToken),
+		ExpiresAt: tokens.RefreshExpiresAt,
+		UserAgent: meta.UserAgent,
+		IPAddress: meta.IP,
 	}
 	err = s.sessionRepo.Create(ctx, session)
 	if err != nil {
 		return nil, nil, err
 	}
-	
+
 	return &dto.TokenResponse{AccessToken: tokens.AccessToken}, tokens, nil
 }

@@ -6,15 +6,15 @@ import (
 )
 
 type AccessClaims struct {
-	UserID		uint	`json:"user_id"` 
+	UserID    uint      `json:"user_id"`
 	SessionID uuid.UUID `json:"sid"`
 
-    jwt.RegisteredClaims
+	jwt.RegisteredClaims
 }
 
 type RefreshClaims struct {
 	UserID    uint      `json:"user_id"`
-    SessionID uuid.UUID `json:"sid"`
+	SessionID uuid.UUID `json:"sid"`
 
-    jwt.RegisteredClaims
+	jwt.RegisteredClaims
 }

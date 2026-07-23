@@ -1,10 +1,12 @@
 package dto
 
-import ("time")
+import (
+	"time"
+)
 
 type UserResponse struct {
-	Name      string 	`json:"name"`
-	Email 	  string 	`json:"email"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

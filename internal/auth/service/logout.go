@@ -16,7 +16,7 @@ func (s *Service) Logout(ctx context.Context, refreshToken string) error {
 	}
 
 	if HashToken(refreshToken) != session.TokenHash {
-    	return ErrInvalidRefreshToken
+		return ErrInvalidRefreshToken
 	}
 
 	if session.RevokedAt != nil {

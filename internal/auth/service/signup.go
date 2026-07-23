@@ -14,7 +14,7 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (*dt
 	if err != nil {
 		return nil, err
 	}
-	user := &entity.User {
+	user := &entity.User{
 		Name:         name,
 		Email:        email,
 		PasswordHash: string(hash),
@@ -24,4 +24,4 @@ func (s *Service) Signup(ctx context.Context, name, email, password string) (*dt
 		return nil, err
 	}
 	return &dto.UserResponse{Name: name, Email: email, CreatedAt: time.Now()}, nil
-} 
+}

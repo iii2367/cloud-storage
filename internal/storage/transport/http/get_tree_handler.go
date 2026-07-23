@@ -9,15 +9,15 @@ import (
 
 func (h *Handler) GetTree(c *gin.Context) {
 
-	userID 		:= c.MustGet("userID").(uint)
+	userID := c.MustGet("userID").(uint)
 	treeID, err := uuid.Parse(c.Param("id"))
 
 	if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{
-            "error": "invalid UUID",
-        })
-        return
-    }	
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid UUID",
+		})
+		return
+	}
 
 	tree, err := h.service.GetTree(
 		c.Request.Context(),

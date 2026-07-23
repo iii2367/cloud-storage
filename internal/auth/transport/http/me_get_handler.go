@@ -9,8 +9,8 @@ import (
 
 func (h *Handler) GetMe(c *gin.Context) {
 
-	userID 		:= c.MustGet("userID").(uint)
-	sessionID 	:= c.MustGet("sessionID").(uuid.UUID)
+	userID := c.MustGet("userID").(uint)
+	sessionID := c.MustGet("sessionID").(uuid.UUID)
 
 	user, err := h.service.GetMe(
 		c.Request.Context(),

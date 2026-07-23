@@ -56,7 +56,7 @@ func (r *TreeNodeRepository) FindByID(ctx context.Context, id uuid.UUID, userID 
 		upload_at, updated_at, name, description, size
 		FROM tree_nodes
 		WHERE id = $1 AND user_id = $2
-	`	
+	`
 	var node entity.TreeNode
 
 	err := r.db.QueryRow(
@@ -78,7 +78,9 @@ func (r *TreeNodeRepository) FindByID(ctx context.Context, id uuid.UUID, userID 
 		&node.Size,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) { return nil, repository.ErrTreeNodeNotFound }
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrTreeNodeNotFound
+		}
 		return nil, fmt.Errorf("%w: find tree node by id: %w", repository.ErrRepository, err)
 	}
 	return &node, nil
@@ -202,7 +204,7 @@ func (r *TreeNodeRepository) FindChildren(ctx context.Context, parentID *uuid.UU
 		`
 
 		rows, err = r.db.Query(ctx, query, *parentID, userID)
-	}	
+	}
 	if err != nil {
 		return nil, fmt.Errorf("%w: find tree nodes by parent id: %w", repository.ErrRepository, err)
 	}
@@ -237,7 +239,7 @@ func (r *TreeNodeRepository) FindChildren(ctx context.Context, parentID *uuid.UU
 	}
 	return nodes, nil
 }
-	
+
 func (r *TreeNodeRepository) UpdateName(ctx context.Context, id uuid.UUID, userID uint, name string) error {
 	query := `
         UPDATE tree_nodes
@@ -245,24 +247,24 @@ func (r *TreeNodeRepository) UpdateName(ctx context.Context, id uuid.UUID, userI
         WHERE id = $1 AND user_id = $2;
     `
 	result, err := r.db.Exec(
-        ctx,
-        query,
-        id,
+		ctx,
+		query,
+		id,
 		userID,
-        name,
-    )
-	 if err != nil {
-        return fmt.Errorf("%w: update name: %w",
-            repository.ErrRepository,
-            err,
-        )
-    }
+		name,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: update name: %w",
+			repository.ErrRepository,
+			err,
+		)
+	}
 	if result.RowsAffected() == 0 {
-        return repository.ErrTreeNodeNotFound
-    }
-    return nil
+		return repository.ErrTreeNodeNotFound
+	}
+	return nil
 }
-	
+
 func (r *TreeNodeRepository) UpdateDescription(ctx context.Context, id uuid.UUID, userID uint, description string) error {
 	query := `
         UPDATE tree_nodes
@@ -270,24 +272,24 @@ func (r *TreeNodeRepository) UpdateDescription(ctx context.Context, id uuid.UUID
         WHERE id = $1 AND user_id = $2
     `
 	result, err := r.db.Exec(
-        ctx,
-        query,
-        id,
+		ctx,
+		query,
+		id,
 		userID,
-        description,
-    )
-	 if err != nil {
-        return fmt.Errorf("%w: update description: %w",
-            repository.ErrRepository,
-            err,
-        )
-    }
+		description,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: update description: %w",
+			repository.ErrRepository,
+			err,
+		)
+	}
 	if result.RowsAffected() == 0 {
-        return repository.ErrTreeNodeNotFound
-    }
-    return nil
+		return repository.ErrTreeNodeNotFound
+	}
+	return nil
 }
-	
+
 func (r *TreeNodeRepository) UpdateSize(ctx context.Context, id uuid.UUID, userID uint, size int64) error {
 	query := `
         UPDATE tree_nodes
@@ -295,22 +297,22 @@ func (r *TreeNodeRepository) UpdateSize(ctx context.Context, id uuid.UUID, userI
         WHERE id = $1 AND user_id = $2
     `
 	result, err := r.db.Exec(
-        ctx,
-        query,
-        id,
+		ctx,
+		query,
+		id,
 		userID,
-        size,
-    )
-	 if err != nil {
-        return fmt.Errorf("%w: update size: %w",
-            repository.ErrRepository,
-            err,
-        )
-    }
+		size,
+	)
+	if err != nil {
+		return fmt.Errorf("%w: update size: %w",
+			repository.ErrRepository,
+			err,
+		)
+	}
 	if result.RowsAffected() == 0 {
-        return repository.ErrTreeNodeNotFound
-    }
-    return nil
+		return repository.ErrTreeNodeNotFound
+	}
+	return nil
 }
 
 func (r *TreeNodeRepository) UpdateFileMetadata(ctx context.Context, id uuid.UUID, userID uint, extension *string, mimeType *string, size int64) error {
@@ -344,7 +346,7 @@ func (r *TreeNodeRepository) UpdateFileMetadata(ctx context.Context, id uuid.UUI
 	}
 	return nil
 }
-	
+
 func (r *TreeNodeRepository) Delete(ctx context.Context, id uuid.UUID, userID uint) error {
 	query := `
 		DELETE FROM tree_nodes
@@ -367,7 +369,7 @@ func (r *TreeNodeRepository) Delete(ctx context.Context, id uuid.UUID, userID ui
 	}
 	return nil
 }
-	
+
 func (r *TreeNodeRepository) DeleteByUserID(ctx context.Context, userID uint) (int64, error) {
 	query := `
 		DELETE FROM tree_nodes
@@ -386,7 +388,7 @@ func (r *TreeNodeRepository) DeleteByUserID(ctx context.Context, userID uint) (i
 	}
 	return result.RowsAffected(), nil
 }
-	
+
 func (r *TreeNodeRepository) DeleteByParentID(ctx context.Context, parentID uuid.UUID, userID uint) (int64, error) {
 	query := `
 		DELETE FROM tree_nodes

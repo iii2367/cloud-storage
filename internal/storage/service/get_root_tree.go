@@ -15,7 +15,7 @@ func (s *Service) GetRootTree(
 	if err != nil {
 		return nil, err
 	}
-	
+
 	children, err := s.treeNodeRepo.FindChildren(ctx, &root.ID, userID)
 
 	if err != nil {

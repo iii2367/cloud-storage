@@ -4,8 +4,8 @@ import (
 	"cloud-storage/internal/auth/dto"
 	"cloud-storage/internal/auth/entity"
 	"context"
-	"time"
 	"github.com/google/uuid"
+	"time"
 )
 
 func (s *Service) Refresh(ctx context.Context, refreshToken string) (*dto.TokenResponse, *TokenPair, error) {
@@ -24,11 +24,11 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string) (*dto.TokenR
 	}
 
 	if session.RevokedAt != nil {
-    	err = s.sessionRepo.RevokeAllByUserID(ctx, session.UserID)
+		err = s.sessionRepo.RevokeAllByUserID(ctx, session.UserID)
 		if err != nil {
 			return nil, nil, err
 		}
-    	return nil, nil, ErrRefreshTokenReuse
+		return nil, nil, ErrRefreshTokenReuse
 	}
 
 	if time.Now().After(session.ExpiresAt) {

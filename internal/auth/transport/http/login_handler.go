@@ -11,18 +11,18 @@ import (
 
 func (h *Handler) Login(c *gin.Context) {
 	var req dto.LoginRequest
-	err := c.ShouldBindJSON(&req);
+	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}	
+	}
 	tokenResponse, tokens, err := h.service.Login(
 		c.Request.Context(),
 		req.Email,
 		req.Password,
 		service.LoginMeta{
-			UserAgent:  c.Request.UserAgent(),
-			IP:			net.ParseIP(c.ClientIP()),
+			UserAgent: c.Request.UserAgent(),
+			IP:        net.ParseIP(c.ClientIP()),
 		},
 	)
 	if err != nil {
@@ -30,10 +30,10 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 	setRefreshCookie(
-    	c.Writer,
+		c.Writer,
 		c.Request,
-    	tokens.RefreshToken,
-    	tokens.RefreshExpiresAt,
-	)	
+		tokens.RefreshToken,
+		tokens.RefreshExpiresAt,
+	)
 	c.JSON(http.StatusOK, tokenResponse)
 }

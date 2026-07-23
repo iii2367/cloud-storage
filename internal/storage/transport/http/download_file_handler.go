@@ -1,6 +1,6 @@
 package http
 
-import (		
+import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,6 @@ import (
 func (h *Handler) DownloadFile(c *gin.Context) {
 
 	userID := c.MustGet("userID").(uint)
-
 
 	nodeID, err := uuid.Parse(
 		c.Param("id"),

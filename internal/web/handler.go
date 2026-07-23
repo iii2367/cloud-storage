@@ -10,21 +10,13 @@ func NewHandler() *Handler {
 }
 
 func (h *Handler) Login(c *gin.Context) {
-	c.HTML(200, "login.html", gin.H{
-		"Title": 	"Welcome",
-		"TitleBox": "Welcome",
-	})
+	c.HTML(200, "login.html", gin.H{})
 }
 
 func (h *Handler) Signup(c *gin.Context) {
-	c.HTML(200, "signup.html", gin.H{
-		"Title":	"SignUp",
-		"TitleBox":	"SignUp",
-	})
+	c.HTML(200, "signup.html", gin.H{})
 }
 
 func (h *Handler) Storage(c *gin.Context) {
-	c.HTML(200, "storage.html", gin.H{
-		"Title":	"Cloud Storage",	
-	})
+	c.HTML(200, "storage.html", gin.H{})
 }
