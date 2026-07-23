@@ -15,8 +15,7 @@ func RegisterRoutes(r *gin.Engine, h *Handler, m *Middleware) {
 	users := r.Group("api/users")
 	users.Use(m.AuthMiddleware())
 	{
-		users.GET("/me", h.GetMe)
-		//		users.PATCH("/me", h.UpdateMe)
+		users.GET("/me", h.GetMe)	
 		users.DELETE("/me", h.DeleteMe)
 	}
 }

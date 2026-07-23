@@ -14,8 +14,14 @@ import (
 	"cloud-storage/internal/jwt"
 	"cloud-storage/internal/web"
 
+	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -53,17 +59,49 @@ func main() {
 	webHandler := web.NewHandler()
 	web.RegisterRoutes(router, webHandler)
 
-	router.GET("/test_auth", func(c *gin.Context) {
-		c.File("./web/templates/test_auth_api.html")
-	})
-
 	addr := fmt.Sprintf("%s:%s",
 		cfg.Server.Host,
 		cfg.Server.Port,
 	)
-	log.Println("server started on", addr)
 
-	if err := router.Run(addr); err != nil {
-		log.Fatal(err)
+	server := &http.Server{
+		Addr:    addr,
+		Handler: router,
 	}
+	go func() {
+		log.Println("server started on", addr)
+
+		if err := server.ListenAndServe(); err != nil &&
+			err != http.ErrServerClosed {
+
+			log.Fatalf("server error: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+
+	signal.Notify(
+		quit,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+	)
+
+	<-quit
+
+	log.Println("shutdown signal received")
+
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		10*time.Second,
+	)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf(
+			"server forced shutdown: %v",
+			err,
+		)
+	}
+
+	log.Println("server stopped gracefully")
 }
