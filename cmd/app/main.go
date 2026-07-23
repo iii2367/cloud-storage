@@ -49,10 +49,6 @@ func main() {
 
 	router := gin.Default()
 
-	router.LoadHTMLGlob("web/templates/*")
-	router.Static("/css", "./web/static/css")
-	router.Static("/js", "./web/static/js")
-
 	authHttp.RegisterRoutes(router, authHandler, authMiddleware)
 	storageHttp.RegisterRoutes(router, storageHandler, storageMiddleware)
 
