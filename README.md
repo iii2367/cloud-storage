@@ -5,19 +5,40 @@ The project focuses on backend architecture, authentication, and hierarchical fi
 
 ## Appearance
 
-<p align="center">
-  <img src="docs/login.png" alt="Login" width="48%">
-</p>
+## Appearance
 
-<p align="center">
-  <img src="docs/storage.png" alt="Storage" width="70%">
-</p>
+<table align="center">
+<tr>
+<td align="center">
+<img src="docs/login.png" width="420"><br>
+<b>Login</b>
+</td>
+</tr>
 
-<p align="center">
-  <img src="docs/upload_file.png" alt="Upload File" width="48%">
-  <img src="docs/account.png" alt="Account" width="48%">
-  <img src="docs/file_info.png" alt="File Information" width="48%">
-</p>
+<tr>
+<td align="center">
+<img src="docs/storage.png" width="900"><br>
+<b>Storage</b>
+</td>
+</tr>
+
+<tr>
+<td align="center">
+<img src="docs/upload_file.png" width="250"><br>
+<b>Upload</b>
+</td>
+
+<td align="center">
+<img src="docs/account.png" width="250"><br>
+<b>Account</b>
+</td>
+
+<td align="center">
+<img src="docs/file_info.png" width="250"><br>
+<b>File Information</b>
+</td>
+</tr>
+</table>
 
 ## Features
 
